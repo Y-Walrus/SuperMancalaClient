@@ -4,8 +4,8 @@ import json
 import random
 import time
 
-HOST = "loopback"  # "109.65.31.250"  # "79.179.71.212"
-PORT = 62152  # 45000
+HOST = "79.179.56.13" #"loopback"  # "109.65.31.250"  # "79.179.71.212"
+PORT = 45000  # 45000
 
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
@@ -57,18 +57,20 @@ def random_tree(depth):  # random type and then a random number, not vice versa 
 
 def random_tree_fill(tree, depth):
     d = depth
-    if d != 0:
+    if d != 0 and not tree.data.isnumeric():
         if depth == 1:
             function_set = ["random_number"]
             tree.insert(random_function(function_set))
-        elif not tree.data.isnumeric():
             if tree.data in ["+", "-"]:
-                function_set = ["+", "-", "value_at", "random_number"]
                 tree.insert(random_function(function_set))
-                tree.insert(random_function(function_set))
-            else:
-                function_set = ["+", "-", "value_at", "random_number"]
-                tree.insert(random_function(function_set))
+
+        elif tree.data in ["+", "-"]:
+            function_set = ["+", "-", "value_at", "random_number"]
+            tree.insert(random_function(function_set))
+            tree.insert(random_function(function_set))
+        else:
+            function_set = ["+", "-", "value_at", "random_number"]
+            tree.insert(random_function(function_set))
 
         for node in tree.nodes:
             random_tree_fill(node, d - 1)
@@ -80,9 +82,28 @@ def random_population(size, depth):
     return [random_tree(depth) for _ in range(size)]
 
 
+def parse_program(program, board):
+    if program.data.isnumeric():
+        return int(program.data)
+    elif program.data == "+":
+        return parse_program(program.nodes[0], board) + parse_program(program.nodes[1], board)
+    elif program.data == "-":
+        return parse_program(program.nodes[0], board) - parse_program(program.nodes[1], board)
+    elif program.data == "value_at":
+        return value_at(parse_program(program.nodes[0], board), board)
+
+
+def value_at(choice, board):
+    return board[abs(choice) % 14]
+
+
+def move_is_valid(choice, board):
+    #print(board[choice])
+    return 1 <= choice <= 6 and board[choice] != 0
+
+
 def receive():
     while 1:
-        t0 = time.time()
         try:
             msg_length = int(client_socket.recv(5))  # is BUFSIZ critical here?
             data = json.loads(client_socket.recv(msg_length))
@@ -91,12 +112,13 @@ def receive():
         if not data:
             break
 
+        t0 = time.time()
         if data["type"] == "Board Update":
             print_board_state(data["board"])
             print(data["your turn"])
             print()
             if data["your turn"]:
-                move()
+                move(data["board"])
                 print(time.time() - t0)
 
         elif data["type"] == "Success":
@@ -109,7 +131,9 @@ def receive():
             if data["errtype"] == "Invalid Name":
                 print(data["data"])
             if data["errtype"] == "Invalid Move":
-                move()
+                print(data)
+                print("Got error of invalid move, unable to make move because no board state was delivered")
+                # move()
                 print(time.time() - t0)
 
         elif data["type"] == "Game Over":
@@ -153,11 +177,17 @@ def login():
     send(json.dumps({"type": "Login", "name": input("name --> ")}))
 
 
-def move():
+def move(board_state):
+    population = random_population(512, 8)
+    # fitness_list = evaluate_fitness(population, board)
+    k = random.randint(1, 6)
+    while not move_is_valid(k, board_state):
+        k = random.randint(1, 6)
+    print(k)
     send(
         json.dumps({
             "type": "Game Move",
-            "index": random.randint(1, 6)
+            "index": k
         })
     )
 
@@ -178,6 +208,7 @@ def print_board_state(board):
 
 t = random_tree(16)
 t.print_tree()
+print("Choice of tree:", parse_program(t, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 1]))
 
 # print_board_state([0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4])
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
