@@ -21,6 +21,10 @@ def receive():
             msg_length = int(client_socket.recv(5))  # is BUFSIZ critical here?
             data = json.loads(client_socket.recv(msg_length))
         except ConnectionResetError:
+            print("ConnectionResetError in receive()")
+            break
+        except ConnectionAbortedError:
+            print("ConnectionAbortedError in receive()")
             break
         if not data:
             break
