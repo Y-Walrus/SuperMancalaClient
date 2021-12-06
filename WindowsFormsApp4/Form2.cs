@@ -7,41 +7,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.Sockets;
+
 
 namespace WindowsFormsApp4
 {
     public partial class Form2 : Form
     {
-        
-        public Form2()
+        private TcpClient client;
+        private NetworkStream stream;
+        public Form2(TcpClient client,NetworkStream stream)
         {
             InitializeComponent();
+            this.stream = stream;
         }
 
-        //protected override void OnFormClosing(FormClosingEventArgs e)
-        //{
-        //    this.Close();
-        //}
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            this.client.Close();
+            this.stream.Close();
+            this.Close();
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form3 f = new Form3(this);
+            string name = textBox1.Text;
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes(name);
+            stream.Write(data, 0, data.Length);
+
+            Form3 f = new Form3(this,this.client,this.stream);
             f.Location = this.Location;
             f.Show();
             this.Hide();
-
-            string name=textBox1.Text;
-
-            //if(login successful)
-            //{
-            //    f.Show();
-            //    this.Hide();
-            //}
-            //else
-            //{
-            //    label3.Text = "Login Error";
-            //}
-            
         }
     }
 }
