@@ -3,65 +3,29 @@ from threading import Thread
 import json
 import random
 
-HOST = "loopback"  # "109.65.31.250"  # "79.179.71.212"
-PORT = 49794  # 45000
+CLINET_HOST = "loopback"
+CLIENT_PORT = 56595
+ADDR = (CLINET_HOST, CLIENT_PORT)
 
-BUFSIZ = 1024
-ADDR = (HOST, PORT)
+BACKEND_HOST = "loopback"
+BACKEND_PORT = 0  # 21257
+BACKEND_ADDR = (BACKEND_PORT, BACKEND_HOST)
+
+BUFFER_SIZE = 1024
 
 
 # create model, controller files (python), define for each what will be inside (game logic/communication with backend)
-# create C# view file
-# think about what happens with the view while the bot is playing, does it slow down?
-# start writing the algorithm, save the random one and see if it starts beating and how much
 
-def receive():
+def frontend_communication():
     while 1:
         try:
-            msg_length = int(client_socket.recv(5))  # is BUFSIZ critical here?
-            data = json.loads(client_socket.recv(msg_length))
-        except ConnectionResetError:
-            print("ConnectionResetError in receive()")
+            command = backend_socket.recv(BUFFER_SIZE)
+        except ConnectionResetError:  # 10054
             break
-        except ConnectionAbortedError:
-            print("ConnectionAbortedError in receive()")
-            break
-        if not data:
+        if not command:
             break
 
-        if data["type"] == "Board Update":
-            print_board_state(data["board"])
-            print(data["your turn"])
-            print()
-            if data["your turn"]:
-                move()
-
-        elif data["type"] == "Success":
-            try:
-                print("Game ID:", data["game_id"])
-            except:
-                pass
-
-        elif data["type"] == "Error":
-            if data["errtype"] == "Invalid Name":
-                print(data["data"])
-            if data["errtype"] == "Invalid Move":
-                move()
-
-        elif data["type"] == "Game Over":
-            wewon = data["won"]
-            print(data["log"])
-            if wewon:
-                print("yay!")
-            else:
-                print("lost :(")
-        else:
-            print(data)
-
-
-def user_send():
-    while 1:
-        command = input("> ").lower()
+        command = command.decode()
         if command in ["start", "create"]:
             client_socket.send(json.dumps({"type": "Start Game", "slow_game": True}).encode())
         elif command in ["restart", "reset"]:
@@ -81,20 +45,58 @@ def user_send():
             client_socket.send(command.encode())
 
 
-def send(data):
-    client_socket.send(data.encode())
+def server_communication():
+    while 1:
+        try:
+            msg_length = int(client_socket.recv(5))
+            data = json.loads(client_socket.recv(msg_length))
+        except ConnectionResetError:
+            print("ConnectionResetError in receive()")
+            break
+        except ConnectionAbortedError:
+            print("ConnectionAbortedError in receive()")
+            break
+        if not data:
+            break
 
+        if data["type"] == "Board Update":
+            print_board_state(data["board"])
+            frontend_socket.send((data["board"] + " " + data["your turn"]).encode())
+            print(data["board"] + " " + data["your turn"])
+            print()
+            if data["your turn"]:
+                move()
 
-def login():
-    send(json.dumps({"type": "Login", "name": input("name --> ")}))
+        elif data["type"] == "Success":
+            try:
+                print("Game ID:", data["game_id"])
+                frontend_socket.send(("ID " + data["game_id"]).encode())
+            except:
+                pass
+
+        elif data["type"] == "Error":
+            if data["errtype"] == "Invalid Name":
+                print(data["data"])
+            if data["errtype"] == "Invalid Move":
+                move()
+
+        elif data["type"] == "Game Over":
+            wewon = data["won"]
+            print(data["log"])
+            if wewon:
+                frontend_socket.send("WIN".encode())
+            else:
+                frontend_socket.send("LOSS".encode())
+        else:
+            print(data)
 
 
 def move():
-    send(
+    client_socket.send(
         json.dumps({
             "type": "Game Move",
             "index": random.randint(1, 6)
-        })
+        }).encode()
     )
 
 
@@ -112,12 +114,18 @@ def print_board_state(board):
     print()
 
 
-# print_board_state([0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4])
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+backend_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+backend_socket.bind(BACKEND_ADDR)
+backend_socket.listen(2)
 
+print("Waiting for frontend connection...")
+frontend_socket, addr = backend_socket.accept()
+print("Frontend connected from: ", addr)
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 while 1:
     try:
-        print("Waiting for connection...")
+        print("Waiting for server connection...")
         client_socket.connect(ADDR)
         print("Connected to server successfully")
         break
@@ -128,8 +136,8 @@ while 1:
         print("TimeoutError")
         continue
 
-rec = Thread(target=receive)
-rec.start()
+handle_server_communication = Thread(target=server_communication)
+handle_server_communication.start()
 
-u_send = Thread(target=user_send)
-u_send.start()
+handle_frontend_communication = Thread(target=frontend_communication)
+handle_frontend_communication.start()
