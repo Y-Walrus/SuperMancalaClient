@@ -17,59 +17,57 @@ namespace WindowsFormsApp4
         
         private TcpClient client;
         private NetworkStream stream;
+        private Label[] boardLabels;
 
         public Form1(TcpClient client,NetworkStream stream)
         {
             InitializeComponent();
 
-            
-            this.checkBox1.ForeColor = Color.Black;
-            this.checkBox2.ForeColor = Color.Black;
-            
-            
-
-            this.client = client;
-            this.stream = stream;
-
-
-            //// String to store the response ASCII representation.
-            //Byte[] data = new Byte[256];
-
-            //// Read the first batch of the TcpServer response bytes.
-            //Int32 bytes = stream.Read(data, 0, data.Length);
-            //string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-            //while (responseData != "LOSS" && responseData != "WIN")
-            //{
-            //    responseData.Replace("[", "");
-            //    responseData.Replace("]", "");
-            //    string[] update = responseData.Split(' ');
-            //    string[] updateBoardLabels = new string[update.Length - 1];
-            //    for (int i = 0; i < updateBoardLabels.Length; i++) 
-            //    {
-            //        updateBoardLabels[i] = update[i][0]+"";
-            //    }
-            //    UpdateBoard(updateBoardLabels, update[update.Length - 1]);
-
-            //    data = new Byte[256];
-
-            //    // Read the first batch of the TcpServer response bytes.
-            //    bytes = stream.Read(data, 0, data.Length);
-            //    responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            //}
-            //if(responseData=="WIN")
-            //    label14.Text = "YOU WON!";
-            //else
-            //    label14.Text = "YOU LOST :(";
-            
-        }
-
-        private void UpdateBoard(string [] updateArr,string isMyTurn, int choice=0)
-        {
             Label[] boardLabels = { this.label1,this.label2,this.label3,this.label4,
                 this.label5,this.label6,this.label7,this.label8,this.label9,this.label10,
                 this.label11,this.label12,this.label13,this.label14};
 
+            this.boardLabels = boardLabels;
+            this.client = client;
+            this.stream = stream;
+            //Game();
+        }
+
+        private void Game()
+        {
+            // String to store the response ASCII representation.
+            Byte[] data = new Byte[256];
+
+            // Read the first batch of the TcpServer response bytes.
+            Int32 bytes = stream.Read(data, 0, data.Length);
+            string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+
+            while (responseData != "LOSS" && responseData != "WIN")
+            {
+                responseData.Replace("[", "");
+                responseData.Replace("]", "");
+                string[] update = responseData.Split(' ');
+                string[] updateBoardLabels = new string[update.Length - 1];
+                for (int i = 0; i < updateBoardLabels.Length; i++)
+                {
+                    updateBoardLabels[i] = update[i][0] + "";
+                }
+                UpdateBoard(updateBoardLabels, update[update.Length - 1]);
+
+                data = new Byte[256];
+
+                // Read the first batch of the TcpServer response bytes.
+                bytes = stream.Read(data, 0, data.Length);
+                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            }
+            if (responseData == "WIN")
+                label14.Text = "YOU WON!";
+            else
+                label14.Text = "YOU LOST :(";
+        }
+
+        private void UpdateBoard(string [] updateArr,string isMyTurn, int choice=0)
+        {
             if (isMyTurn=="true")
             {
                 this.checkBox1.Checked = true;
@@ -83,7 +81,7 @@ namespace WindowsFormsApp4
 
             for(int i=0;i<boardLabels.Length;i++)
             {
-                boardLabels[i].BackColor = Color.Tan;
+                this.boardLabels[i].BackColor = Color.Tan;
             }
 
             boardLabels[choice].BackColor = Color.Tomato;
@@ -118,8 +116,21 @@ namespace WindowsFormsApp4
 
         private void restartToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            for(int i=0;i<this.boardLabels.Length;i++)
+            {
+                if (i == 0 || i == 7)
+                    this.boardLabels[i].Text = "0";
+                else this.boardLabels[i].Text = "4";
+            }
+
+            this.checkBox1.Checked = false;
+            this.checkBox2.Checked = false;
+            this.label14.Text = "GAME STARTED";
+
             //Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
             //stream.Write(data, 0, data.Length);
+
+            //Game();
         }
     }
 }
