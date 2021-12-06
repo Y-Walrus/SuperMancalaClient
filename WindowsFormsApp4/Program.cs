@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
+using System.Net;
 
 
 namespace WindowsFormsApp4
@@ -19,13 +20,18 @@ namespace WindowsFormsApp4
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form2 f2 = new Form2(stream);
-            Application.Run(f2);
 
-            Int32 port = 13000;
-            string host = "127.0.0.1";
-            TcpClient client = new TcpClient(host, port);
-            NetworkStream stream = client.GetStream();
+
+
+            //Int32 port = 43000;
+            //string host = "127.0.0.0";
+
+
+            TcpClient client = null;//new TcpClient(host, port);
+            NetworkStream stream = null;//client.GetStream();
+
+            Form2 f2 = new Form2(client,stream);
+            Application.Run(f2);
         }
     }
 }

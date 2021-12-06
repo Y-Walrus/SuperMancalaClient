@@ -282,7 +282,7 @@
             // 
             this.returnToJoinstartToolStripMenuItem.Name = "returnToJoinstartToolStripMenuItem";
             this.returnToJoinstartToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.returnToJoinstartToolStripMenuItem.Text = "Return to join/start";
+            this.returnToJoinstartToolStripMenuItem.Text = "Back";
             this.returnToJoinstartToolStripMenuItem.Click += new System.EventHandler(this.returnToJoinstartToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem

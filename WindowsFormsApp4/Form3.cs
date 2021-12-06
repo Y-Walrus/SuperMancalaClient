@@ -14,24 +14,22 @@ namespace WindowsFormsApp4
 {
     public partial class Form3 : Form
     {
-        private Form mainScreen;
         private NetworkStream stream;
         private TcpClient client;
 
-        public Form3(Form mainScreen,TcpClient client,NetworkStream stream)
+        public Form3(TcpClient client,NetworkStream stream)
         {
             InitializeComponent();
-            this.mainScreen = mainScreen;
             this.client = client;
             this.stream = stream;
         }
 
         private void startGameBtn_Click(object sender, EventArgs e)
         {
-            Form1 f = new Form1(mainScreen,client,stream);
+            Form1 f = new Form1(client,stream);
             f.Location = this.Location;
             f.Show();
-            this.Close();
+            this.Hide();
         }
 
         private void joinGameBtn_Click(object sender, EventArgs e)
@@ -49,21 +47,36 @@ namespace WindowsFormsApp4
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            this.stream.Close();
-            this.client.Close();
-            this.mainScreen.Close();
+            //this.stream.Close();
+            //this.client.Close();
+            Application.Exit();
         }
 
         private void joinBtn_Click(object sender, EventArgs e)
         {
-            string gameID = textBox1.Text;
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes("join "+gameID);
+            //string gameID = textBox1.Text;
+            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("join "+gameID);
 
-            stream.Write(data, 0, data.Length);
-            Form1 f = new Form1(mainScreen,client,stream);
+            //stream.Write(data, 0, data.Length);
+            Form1 f = new Form1(client,stream);
             f.Location = this.Location;
             f.Show();
-            this.Close();
+            this.Hide();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //this.stream.Close();
+            //this.client.Close();
+            Application.Exit();
+        }
+
+        private void backToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 f = new Form2(this.client, this.stream);
+            f.Location = this.Location;
+            f.Show();
+            this.Hide();
         }
     }
 }

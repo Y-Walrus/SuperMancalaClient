@@ -14,33 +14,32 @@ namespace WindowsFormsApp4
 {
     public partial class Form1 : Form
     {
-        private Form mainScreen;
+        
         private TcpClient client;
         private NetworkStream stream;
 
-        public Form1(Form mainScreen,TcpClient client,NetworkStream stream)
+        public Form1(TcpClient client,NetworkStream stream)
         {
             InitializeComponent();
-            this.mainScreen = mainScreen;
             this.client = client;
             this.stream = stream;
 
 
 
-            // String to store the response ASCII representation.
-            Byte[] data = new Byte[256];
+            //// String to store the response ASCII representation.
+            //Byte[] data = new Byte[256];
 
-            // Read the first batch of the TcpServer response bytes.
-            Int32 bytes = stream.Read(data, 0, data.Length);
-            string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            //// Read the first batch of the TcpServer response bytes.
+            //Int32 bytes = stream.Read(data, 0, data.Length);
+            //string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-            while (responseData!="LOSS"&&responseData!="WIN")
-            {
-                responseData.Replace("[", "");
-                responseData.Replace("]", "");
-                string[] update = responseData.Split(' ');
-                UpdateBoard()
-            }
+            //while (responseData!="LOSS"&&responseData!="WIN")
+            //{
+            //    responseData.Replace("[", "");
+            //    responseData.Replace("]", "");
+            //    string[] update = responseData.Split(' ');
+            //    //UpdateBoard()
+            //}
         }
 
         private void UpdateBoard(string [] updateArr,string isMyTurn, int choice)
@@ -64,14 +63,14 @@ namespace WindowsFormsApp4
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            this.client.Close();
-            this.stream.Close();
-            this.mainScreen.Close();
+            //this.stream.Close();
+            //this.client.Close();
+            Application.Exit();
         }
 
         private void returnToJoinstartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form3 f = new Form3(this,client,stream);
+            Form3 f = new Form3(client,stream);
             f.Location = this.Location;
             f.Show();
             this.Hide();
@@ -79,13 +78,15 @@ namespace WindowsFormsApp4
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.mainScreen.Close();
+            //this.stream.Close();
+            //this.client.Close();
+            Application.Exit();
         }
 
         private void restartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
-            stream.Write(data, 0, data.Length);
+            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
+            //stream.Write(data, 0, data.Length);
         }
     }
 }
