@@ -9,3 +9,15 @@ C:\Users\Ben\source\repos\WindowsFormsApp4\WindowsFormsApp4\obj\Debug\WindowsFor
 C:\Users\Ben\source\repos\WindowsFormsApp4\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.csproj.CoreCompileInputs.cache
 C:\Users\Ben\source\repos\WindowsFormsApp4\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.exe
 C:\Users\Ben\source\repos\WindowsFormsApp4\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.pdb
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.csprojAssemblyReference.cache
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.Form1.resources
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.Form2.resources
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.Form3.resources
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.Properties.Resources.resources
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.csproj.GenerateResource.cache
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.csproj.CoreCompileInputs.cache
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.exe
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\obj\Debug\WindowsFormsApp4.pdb
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\bin\Debug\WindowsFormsApp4.exe.config
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\bin\Debug\WindowsFormsApp4.exe
+C:\Users\Ben\Desktop\MancalaUI\SuperMancalaClient\WindowsFormsApp4\bin\Debug\WindowsFormsApp4.pdb

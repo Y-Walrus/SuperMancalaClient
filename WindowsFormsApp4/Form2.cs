@@ -19,7 +19,8 @@ namespace WindowsFormsApp4
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form1 f = new Form1();
+            Form3 f = new Form3();
+
             string name=textBox1.Text;
 
             //if(login successful)

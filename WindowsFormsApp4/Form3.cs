@@ -16,5 +16,35 @@ namespace WindowsFormsApp4
         {
             InitializeComponent();
         }
+
+        private void startGameBtn_Click(object sender, EventArgs e)
+        {
+            Form1 f = new Form1();
+            f.Location = this.Location;
+            f.Show();
+            this.Close();
+        }
+
+        private void joinGameBtn_Click(object sender, EventArgs e)
+        {
+            startGameBtn.Enabled = false;
+            joinGameBtn.Enabled = false;
+            startGameBtn.Hide();
+            joinGameBtn.Hide();
+
+            joinBtn.Enabled = true;
+            joinBtn.Visible = true;
+            textBox1.Enabled = true;
+            textBox1.Visible = true;
+        }
+
+        private void joinBtn_Click(object sender, EventArgs e)
+        {
+            string gameID = textBox1.Text;
+            Form1 f = new Form1();
+            f.Location = this.Location;
+            f.Show();
+            this.Close();
+        }
     }
 }
