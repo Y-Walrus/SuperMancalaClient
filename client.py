@@ -3,9 +3,10 @@ from threading import Thread
 import json
 import random
 import time
+import pickle
 
 HOST = "loopback"  # "109.66.6.106"   # "109.65.31.250"  # "79.179.71.212"
-PORT = 64823  # 45000
+PORT = 59315  # 45000
 
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
@@ -210,12 +211,15 @@ def fitness(board_state, population):
     for program in population:
         score = 0
 
-        board = board_state.copy()
-        score += simulation(program, board, True)
+        #board = board_state.copy()
+        #score += simulation(program, board, True)
 
-        board = board_state.copy()
-        score += simulation(program, board, False)
+        #board = board_state.copy()
+        #score += simulation(program, board, False)
 
+        #score = 100 * score - program.depth()
+        results = benchmark(program, 10)
+        score = results[0] * 10 + results[1] * 5 - program.node_amount()
         fitness_list.append((program, score))
 
     return fitness_list
@@ -354,10 +358,10 @@ def bot_move(board_state):
 def move(board_state):
     # population = random_population(512, 8)
     # fitness_list = evaluate_fitness(population, board)
-    t_s = time.time()
-    gen = evolve(initial_board_state, 10, 64, 8)
-    print(time.time()-t_s)
-    best_tree = gen[0][0]
+    # t_s = time.time()
+    # gen = evolve(initial_board_state, 10, 64, 8)
+    # print(time.time() - t_s)
+    # best_tree = gen[0][0]
     choice = parse_program(best_tree, initial_board_state)
     if choice not in valid_moves(board_state):
         choice = abs(choice) % 7
@@ -369,7 +373,7 @@ def move(board_state):
             "index": bot_move(board_state)
         })
     )
-    print(time.time() - t_s)
+    # print(time.time() - t_s)
 
 
 def print_board_state(board):
@@ -386,8 +390,33 @@ def print_board_state(board):
     print()
 
 
-initial_board_state = [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4]
+def benchmark(program, runs):
+    wins = 0
+    draws = 0
+    losses = 0
+    for i in range(runs):
+        r = simulation(program, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], True)
+        if r > 24:
+            wins += 1
+        elif r == 24:
+            draws += 1
+        else:
+            losses += 1
+    #print(wins, draws, losses)
+    #wins, draws, losses = (0, 0, 0)
+    for i in range(runs):
+        r = simulation(program, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], False)
+        if r > 24:
+            wins += 1
+        elif r == 24:
+            draws += 1
+        else:
+            losses += 1
+    #print(wins, draws, losses)
+    return wins, draws, losses
 
+
+initial_board_state = [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4]
 
 '''
 t = random_tree(16)
@@ -402,8 +431,7 @@ print("Depth (no first node):", t.depth())
 
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-
+'''
 while 1:
     try:
         print("Waiting for connection...")
@@ -422,4 +450,41 @@ rec.start()
 
 u_send = Thread(target=user_send)
 u_send.start()
+'''
 
+t_s = time.time()
+gen = evolve(initial_board_state, 1000, 128, 8)
+print(time.time() - t_s)
+best_tree = gen[0][0]
+best_tree.print_tree()
+with open("b_t.pkl", "wb") as f:
+    pickle.dump(best_tree, f, pickle.HIGHEST_PROTOCOL)
+
+'''
+with open("b_t.pkl", "rb") as f:
+    best_tree = pickle.load(f)
+best_tree.print_tree()
+'''
+
+wins = 0
+draws = 0
+losses = 0
+for i in range(1000):
+    r = simulation(best_tree, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], True)
+    if r > 24:
+        wins += 1
+    elif r == 24:
+        draws += 1
+    else:
+        losses += 1
+print(wins, draws, losses)
+wins, draws, losses = (0, 0, 0)
+for i in range(1000):
+    r = simulation(best_tree, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], False)
+    if r > 24:
+        wins += 1
+    elif r == 24:
+        draws += 1
+    else:
+        losses += 1
+print(wins, draws, losses)
