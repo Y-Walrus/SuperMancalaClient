@@ -54,6 +54,7 @@
             this.joinGameBtn.Name = "joinGameBtn";
             this.joinGameBtn.Size = new System.Drawing.Size(368, 59);
             this.joinGameBtn.TabIndex = 1;
+            this.joinGameBtn.TabStop = false;
             this.joinGameBtn.Text = "Join Game";
             this.joinGameBtn.UseVisualStyleBackColor = false;
             this.joinGameBtn.Click += new System.EventHandler(this.joinGameBtn_Click);
@@ -67,6 +68,7 @@
             this.startGameBtn.Name = "startGameBtn";
             this.startGameBtn.Size = new System.Drawing.Size(368, 59);
             this.startGameBtn.TabIndex = 2;
+            this.startGameBtn.TabStop = false;
             this.startGameBtn.Text = "Start Game";
             this.startGameBtn.UseVisualStyleBackColor = false;
             this.startGameBtn.Click += new System.EventHandler(this.startGameBtn_Click);
@@ -90,6 +92,7 @@
             this.joinBtn.Name = "joinBtn";
             this.joinBtn.Size = new System.Drawing.Size(162, 34);
             this.joinBtn.TabIndex = 4;
+            this.joinBtn.TabStop = false;
             this.joinBtn.Text = "Join!";
             this.joinBtn.UseVisualStyleBackColor = false;
             this.joinBtn.Visible = false;
@@ -100,7 +103,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1370, 749);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.joinBtn);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.startGameBtn);

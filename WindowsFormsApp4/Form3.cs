@@ -12,14 +12,17 @@ namespace WindowsFormsApp4
 {
     public partial class Form3 : Form
     {
-        public Form3()
+        private Form mainScreen;
+
+        public Form3(Form mainScreen)
         {
             InitializeComponent();
+            this.mainScreen = mainScreen;
         }
 
         private void startGameBtn_Click(object sender, EventArgs e)
         {
-            Form1 f = new Form1();
+            Form1 f = new Form1(mainScreen);
             f.Location = this.Location;
             f.Show();
             this.Close();
@@ -38,10 +41,17 @@ namespace WindowsFormsApp4
             textBox1.Visible = true;
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            this.mainScreen.Close();
+
+
+        }
+
         private void joinBtn_Click(object sender, EventArgs e)
         {
             string gameID = textBox1.Text;
-            Form1 f = new Form1();
+            Form1 f = new Form1(mainScreen);
             f.Location = this.Location;
             f.Show();
             this.Close();

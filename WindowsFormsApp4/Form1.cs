@@ -12,13 +12,12 @@ namespace WindowsFormsApp4
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        private Form mainScreen;
+
+        public Form1(Form mainScreen)
         {
             InitializeComponent();
-            
-
-
-
+            this.mainScreen = mainScreen;
         }
 
         private void UpdateBoard(int [] updateArr,bool isMyTurn,Label [] boardLabels, int choice)
@@ -40,12 +39,24 @@ namespace WindowsFormsApp4
             }
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            this.mainScreen.Close();
+
+            
+        }
+
         private void returnToJoinstartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form3 f = new Form3();
+            Form3 f = new Form3(this);
             f.Location = this.Location;
             f.Show();
-            this.Close();
+            this.Hide();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.mainScreen.Close();
         }
     }
 }
