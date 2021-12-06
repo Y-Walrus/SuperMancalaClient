@@ -54,6 +54,7 @@
             // joinGameBtn
             // 
             this.joinGameBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.joinGameBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.joinGameBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.joinGameBtn.Location = new System.Drawing.Point(223, 280);
             this.joinGameBtn.Name = "joinGameBtn";
@@ -68,6 +69,7 @@
             // 
             this.startGameBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.startGameBtn.CausesValidation = false;
+            this.startGameBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.startGameBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.startGameBtn.Location = new System.Drawing.Point(223, 215);
             this.startGameBtn.Name = "startGameBtn";
@@ -91,6 +93,7 @@
             // joinBtn
             // 
             this.joinBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.joinBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.joinBtn.Enabled = false;
             this.joinBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.joinBtn.Location = new System.Drawing.Point(429, 362);
@@ -125,14 +128,14 @@
             // backToolStripMenuItem
             // 
             this.backToolStripMenuItem.Name = "backToolStripMenuItem";
-            this.backToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.backToolStripMenuItem.Text = "Back";
+            this.backToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.backToolStripMenuItem.Text = "Logout";
             this.backToolStripMenuItem.Click += new System.EventHandler(this.backToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -153,7 +156,6 @@
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "Form3";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Form3";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

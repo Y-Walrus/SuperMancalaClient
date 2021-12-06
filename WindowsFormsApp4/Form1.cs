@@ -21,9 +21,15 @@ namespace WindowsFormsApp4
         public Form1(TcpClient client,NetworkStream stream)
         {
             InitializeComponent();
+
+            
+            this.checkBox1.ForeColor = Color.Black;
+            this.checkBox2.ForeColor = Color.Black;
+            
+            
+
             this.client = client;
             this.stream = stream;
-
 
 
             //// String to store the response ASCII representation.
@@ -33,20 +39,47 @@ namespace WindowsFormsApp4
             //Int32 bytes = stream.Read(data, 0, data.Length);
             //string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-            //while (responseData!="LOSS"&&responseData!="WIN")
+            //while (responseData != "LOSS" && responseData != "WIN")
             //{
             //    responseData.Replace("[", "");
             //    responseData.Replace("]", "");
             //    string[] update = responseData.Split(' ');
-            //    //UpdateBoard()
+            //    string[] updateBoardLabels = new string[update.Length - 1];
+            //    for (int i = 0; i < updateBoardLabels.Length; i++) 
+            //    {
+            //        updateBoardLabels[i] = update[i][0]+"";
+            //    }
+            //    UpdateBoard(updateBoardLabels, update[update.Length - 1]);
+
+            //    data = new Byte[256];
+
+            //    // Read the first batch of the TcpServer response bytes.
+            //    bytes = stream.Read(data, 0, data.Length);
+            //    responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             //}
+            //if(responseData=="WIN")
+            //    label14.Text = "YOU WON!";
+            //else
+            //    label14.Text = "YOU LOST :(";
+            
         }
 
-        private void UpdateBoard(string [] updateArr,string isMyTurn, int choice)
+        private void UpdateBoard(string [] updateArr,string isMyTurn, int choice=0)
         {
             Label[] boardLabels = { this.label1,this.label2,this.label3,this.label4,
                 this.label5,this.label6,this.label7,this.label8,this.label9,this.label10,
                 this.label11,this.label12,this.label13,this.label14};
+
+            if (isMyTurn=="true")
+            {
+                this.checkBox1.Checked = true;
+                this.checkBox2.Checked = false;
+            }
+            else
+            {
+                this.checkBox1.Checked = false;
+                this.checkBox2.Checked = true;
+            }
 
             for(int i=0;i<boardLabels.Length;i++)
             {

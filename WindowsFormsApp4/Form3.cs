@@ -26,6 +26,10 @@ namespace WindowsFormsApp4
 
         private void startGameBtn_Click(object sender, EventArgs e)
         {
+            //string gameID = textBox1.Text;
+            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("start");
+
+            //stream.Write(data, 0, data.Length);
             Form1 f = new Form1(client,stream);
             f.Location = this.Location;
             f.Show();
@@ -73,6 +77,9 @@ namespace WindowsFormsApp4
 
         private void backToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("logout");
+            //stream.Write(data, 0, data.Length);
+
             Form2 f = new Form2(this.client, this.stream);
             f.Location = this.Location;
             f.Show();

@@ -220,25 +220,35 @@
             // 
             // checkBox1
             // 
+            this.checkBox1.AutoCheck = false;
             this.checkBox1.AutoSize = true;
+            this.checkBox1.BackColor = System.Drawing.Color.Transparent;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.ForeColor = System.Drawing.Color.Black;
             this.checkBox1.Location = new System.Drawing.Point(57, 63);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(65, 29);
             this.checkBox1.TabIndex = 15;
+            this.checkBox1.TabStop = false;
             this.checkBox1.Text = "ME";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.UseVisualStyleBackColor = false;
             // 
             // checkBox2
             // 
+            this.checkBox2.AutoCheck = false;
             this.checkBox2.AutoSize = true;
+            this.checkBox2.BackColor = System.Drawing.Color.Transparent;
+            this.checkBox2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.checkBox2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
             this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox2.ForeColor = System.Drawing.Color.Black;
             this.checkBox2.Location = new System.Drawing.Point(57, 97);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(156, 29);
             this.checkBox2.TabIndex = 16;
+            this.checkBox2.TabStop = false;
             this.checkBox2.Text = "OPPONENT";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.UseVisualStyleBackColor = false;
             // 
             // label14
             // 
@@ -274,21 +284,21 @@
             // restartToolStripMenuItem
             // 
             this.restartToolStripMenuItem.Name = "restartToolStripMenuItem";
-            this.restartToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.restartToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.restartToolStripMenuItem.Text = "Restart";
             this.restartToolStripMenuItem.Click += new System.EventHandler(this.restartToolStripMenuItem_Click);
             // 
             // returnToJoinstartToolStripMenuItem
             // 
             this.returnToJoinstartToolStripMenuItem.Name = "returnToJoinstartToolStripMenuItem";
-            this.returnToJoinstartToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.returnToJoinstartToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.returnToJoinstartToolStripMenuItem.Text = "Back";
             this.returnToJoinstartToolStripMenuItem.Click += new System.EventHandler(this.returnToJoinstartToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -319,7 +329,6 @@
             this.Controls.Add(this.menuStrip1);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

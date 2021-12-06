@@ -33,7 +33,7 @@ namespace WindowsFormsApp4
         private void button1_Click(object sender, EventArgs e)
         {
             string name = textBox1.Text;
-            //Byte[] data = System.Text.Encoding.ASCII.GetBytes(name);
+            //Byte[] data = System.Text.Encoding.ASCII.GetBytes(login name);
             //stream.Write(data, 0, data.Length);
 
             Form3 f = new Form3(this.client,this.stream);
