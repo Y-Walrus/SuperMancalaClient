@@ -4,8 +4,8 @@ import json
 import random
 import time
 
-HOST = "109.66.6.106"  # "loopback"  # "109.66.6.106"   # "109.65.31.250"  # "79.179.71.212"
-PORT = 45000  # 45000
+HOST = "loopback"  # "109.66.6.106"   # "109.65.31.250"  # "79.179.71.212"
+PORT = 64823  # 45000
 
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
@@ -45,16 +45,20 @@ class Node:  # use _ before variables!
     def random_node(self):  # might result in too small trees??? maybe do it with weights to weight more smaller ones
         r = random.randint(0, self.depth())
         tree = self
-        for i in range(r):
+        while r > 0:
             if tree.nodes:
-                tree = random.choice(tree.nodes)
+                k = len(tree.nodes)
+                tree = tree.nodes[random.randint(0, k - 1)]
+                r -= k
             else:
-                print("Chosen Random Tree:")
-                tree.print_tree()
+                # print("Chosen Random Tree:")
+                # tree.print_tree()
                 return tree
+        # tree.print_tree()
+        return tree
 
     def replace_random_node(self, replacing_tree=""):  # default is replacing with random tree
-        node_to_replace = self.random_node().copy()
+        node_to_replace = self.random_node()
         if replacing_tree == "":
             replacing_tree = random_tree(node_to_replace.depth())
 
@@ -84,7 +88,7 @@ def random_tree(depth):  # random type and then a random number, not vice versa 
 
 def random_tree_fill(tree, depth):
     d = depth
-    if d != 0 and not tree.data.isnumeric():
+    if d > 0 and not tree.data.isnumeric():
         if depth == 1:
             function_set = ["random_number"]
             tree.insert(random_function(function_set))
@@ -100,6 +104,7 @@ def random_tree_fill(tree, depth):
             tree.insert(random_function(function_set))
 
         for node in tree.nodes:
+            # print(d)
             random_tree_fill(node, d - 1)
 
     return tree
@@ -218,15 +223,21 @@ def fitness(board_state, population):
 
 def evolve(board_state, generations, population_size, program_depth):
     population = random_population(population_size, program_depth)
+    population_fitness = fitness(board_state, population)
     next_population = []
     for i in range(generations):
         print("Starting Gen" + str(i))
-        population_fitness = fitness(board_state, population)
         next_population.append(max(population_fitness, key=lambda x: x[1])[0])  # elitism
         fill_population(next_population, population_fitness, population_size)  # might not work because of pointers???
-        print(next_population)
+        population_fitness = fitness(board_state, next_population)
+        population = next_population
+        next_population = []
+
+        # print(next_population)
     print("finished evolving")
     # return smth sorted?
+
+    return sorted(population_fitness, key=lambda x: x[1], reverse=True)
 
 
 def fill_population(next_population, population_fitness, population_size):
@@ -244,7 +255,7 @@ def fill_population(next_population, population_fitness, population_size):
 
     for program in next_population:
         if random.random() < 90 / 100:
-            previous_generation_program = random.choices(population=population_weights,
+            previous_generation_program = random.choices(population=population_programs,
                                                          weights=population_weights,
                                                          k=1)[0]
             crossover(program, previous_generation_program)  # might not work because of pointers???
@@ -343,13 +354,22 @@ def bot_move(board_state):
 def move(board_state):
     # population = random_population(512, 8)
     # fitness_list = evaluate_fitness(population, board)
-
+    t_s = time.time()
+    gen = evolve(initial_board_state, 10, 64, 8)
+    print(time.time()-t_s)
+    best_tree = gen[0][0]
+    choice = parse_program(best_tree, initial_board_state)
+    if choice not in valid_moves(board_state):
+        choice = abs(choice) % 7
+        while choice not in valid_moves(board_state):
+            choice = (choice + 1) % 7  # question!!
     send(
         json.dumps({
             "type": "Game Move",
             "index": bot_move(board_state)
         })
     )
+    print(time.time() - t_s)
 
 
 def print_board_state(board):
@@ -367,9 +387,7 @@ def print_board_state(board):
 
 
 initial_board_state = [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4]
-t_s = time.time()
-evolve(initial_board_state, 5, 32, 8)
-print(time.time() - t_s)
+
 
 '''
 t = random_tree(16)
@@ -385,7 +403,6 @@ print("Depth (no first node):", t.depth())
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-'''
 
 while 1:
     try:
@@ -405,4 +422,4 @@ rec.start()
 
 u_send = Thread(target=user_send)
 u_send.start()
-'''
+
