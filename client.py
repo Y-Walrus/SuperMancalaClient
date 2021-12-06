@@ -49,17 +49,17 @@ class Node:  # use _ before variables!
             if tree.nodes:
                 tree = random.choice(tree.nodes)
             else:
+                print("Chosen Random Tree:")
+                tree.print_tree()
                 return tree
 
-    def replace_random_node(self, replacing_tree):
-        r = random.randint(0, self.depth())
-        tree = self
-        for i in range(r):
-            if tree.nodes:
-                tree = random.choice(tree.nodes)
-            else:
-                break
-        # tree.
+    def replace_random_node(self, replacing_tree=""):  # default is replacing with random tree
+        node_to_replace = self.random_node().copy()
+        if replacing_tree == "":
+            replacing_tree = random_tree(node_to_replace.depth())
+
+        node_to_replace.data = node_to_replace.data
+        node_to_replace.nodes = node_to_replace.nodes
 
 
 def random_function(function_set):
@@ -226,6 +226,7 @@ def evolve(board_state, generations, population_size, program_depth):
         fill_population(next_population, population_fitness, population_size)  # might not work because of pointers???
         print(next_population)
     print("finished evolving")
+    # return smth sorted?
 
 
 def fill_population(next_population, population_fitness, population_size):
@@ -252,11 +253,11 @@ def fill_population(next_population, population_fitness, population_size):
 
 
 def crossover(program, previous_generation_program):
-    program.replace_random_node(previous_generation_program.random_node())  # how pointers work???
+    program.replace_random_node(previous_generation_program.random_node())
 
 
 def mutation(program):
-    pass
+    program.replace_random_node()
 
 
 def receive():
@@ -366,18 +367,21 @@ def print_board_state(board):
 
 
 initial_board_state = [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4]
+t_s = time.time()
+evolve(initial_board_state, 5, 32, 8)
+print(time.time() - t_s)
 
+'''
 t = random_tree(16)
 t.print_tree()
-print(t.node_amount())
-print(t.depth())
+print("Node amount:", t.node_amount())
+print("Depth (no first node):", t.depth())
+'''
+
 # print("Choice of tree:", parse_program(t, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 1]))
-
-t_s = time.time()
-population = random_population(128, 8)
-
+# population = random_population(128, 8)
 # print(simulation(t, initial_board_state, True))
-print(time.time() - t_s)
+
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
