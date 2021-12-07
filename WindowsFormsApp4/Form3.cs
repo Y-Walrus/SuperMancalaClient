@@ -35,10 +35,10 @@ namespace WindowsFormsApp4
             //Asks to start a game from the server and moves to the game screen when the 
             //"Start Game" button is pressed 
 
-            //string gameID = textBox1.Text;
-            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("start");
+            string gameID = textBox1.Text;
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes("start");
+            stream.Write(data, 0, data.Length);
 
-            //stream.Write(data, 0, data.Length);
             Form1 f = new Form1(client,stream);
             f.Location = this.Location;
             f.Show();
@@ -66,8 +66,8 @@ namespace WindowsFormsApp4
             //Closes the entire program by clicking on the X
             //arg: e
 
-            //this.stream.Close();
-            //this.client.Close();
+            this.stream.Close();
+            this.client.Close();
             Application.Exit();
         }
 
@@ -75,10 +75,10 @@ namespace WindowsFormsApp4
         {
             //Joinig a game when the "Join!" button is pressed
 
-            //string gameID = textBox1.Text;
-            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("join "+gameID);
+            string gameID = textBox1.Text;
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes("join "+gameID);
+            stream.Write(data, 0, data.Length);
 
-            //stream.Write(data, 0, data.Length);
             Form1 f = new Form1(client,stream);
             f.Location = this.Location;
             f.Show();
@@ -89,8 +89,8 @@ namespace WindowsFormsApp4
         {
             //Closes the entire program by clicking on this option in the menu
 
-            //this.stream.Close();
-            //this.client.Close();
+            this.stream.Close();
+            this.client.Close();
             Application.Exit();
         }
 
@@ -99,8 +99,8 @@ namespace WindowsFormsApp4
             //Returns to the previous screen by clicking on this option in the menu
             //arg: sender, e
 
-            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("logout");
-            //stream.Write(data, 0, data.Length);
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes("logout");
+            stream.Write(data, 0, data.Length);
 
             Form2 f = new Form2(this.client, this.stream);
             f.Location = this.Location;

@@ -28,34 +28,53 @@ namespace WindowsFormsApp4
 
             InitializeComponent();
 
-            Label[] boardLabels = { this.hole1,this.hole2,this.hole3,this.hole4,
-                this.hole5,this.hole6,this.hole7,this.hole8,this.hole9,this.hole10,
-                this.hole11,this.hole12,this.hole13,this.labelTitle};
+            Label[] boardLabels = { this.hole0,this.hole1,this.hole2,this.hole3,
+                this.hole4,this.hole5,this.hole6,this.hole7,this.hole8,this.hole9,
+                this.hole10,this.hole11,this.hole12,this.hole13};
 
             this.boardLabels = boardLabels;
             this.client = client;
             this.stream = stream;
-
-            //Game();
         }
 
         private void Game()
         {
             //Performs backend communication to update the board
 
-            Byte[] data = new Byte[256]; //the response ASCII representation
+            Byte[] data = new Byte[5]; //the response ASCII representation
 
             // Read the first batch of the TcpServer response bytes
             Int32 bytes = stream.Read(data, 0, data.Length);
             string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            Console.WriteLine(responseData);
+
+            data = new Byte[47]; //the response ASCII representation
+
+            // Read the first batch of the TcpServer response bytes
+            bytes = stream.Read(data, 0, data.Length);
+            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            
 
             //A loop that lasts until the end of the game and updates the board
             while (responseData != "LOSS" && responseData != "WIN")
             {
-                responseData.Replace("[", "");
-                responseData.Replace("]", "");
+                Console.WriteLine(responseData);
+                int index= responseData.IndexOf('[');
+                responseData = responseData.Remove(index, 1);
+                index = responseData.IndexOf(']');
+                responseData = responseData.Remove(index, 1);
+                Console.WriteLine(responseData);
+
                 string[] update = responseData.Split(' ');
-                string[] updateBoardLabels = new string[update.Length - 1];
+                Console.WriteLine(update.Length);
+                Console.Write("Update ");
+                for(int i=0;i<update.Length;i++)
+                {
+                    Console.Write(update[i] + "-");
+                }
+                Console.WriteLine();
+
+                string[] updateBoardLabels = new string[14];
 
                 for (int i = 0; i < updateBoardLabels.Length; i++)
                 {
@@ -64,7 +83,7 @@ namespace WindowsFormsApp4
 
                 UpdateBoard(updateBoardLabels, update[update.Length - 1]);
 
-                data = new Byte[256]; //the response ASCII representation
+                data = new Byte[47]; //the response ASCII representation
 
                 // Read the first batch of the TcpServer response bytes
                 bytes = stream.Read(data, 0, data.Length);
@@ -87,7 +106,7 @@ namespace WindowsFormsApp4
             //choice stores the hole number from which the turn was made
 
             //Marks who is playing
-            if (isMyTurn=="true")
+            if (isMyTurn=="True")
             {
                 this.checkBoxMe.Checked = true;
                 this.checkBoxOpponent.Checked = false;
@@ -98,18 +117,18 @@ namespace WindowsFormsApp4
                 this.checkBoxOpponent.Checked = true;
             }
 
-            //Returns all holes to their original color
-            for (int i=0;i<boardLabels.Length;i++)
-            {
-                this.boardLabels[i].BackColor = Color.Tan;
-            }
+            ////Returns all holes to their original color
+            //for (int i=0;i<boardLabels.Length;i++)
+            //{
+            //    this.boardLabels[i].BackColor = Color.Tan;
+            //}
 
-            //Marks the hole number from which the turn was made
-            boardLabels[choice].BackColor = Color.Tomato;
+            ////Marks the hole number from which the turn was made
+            //boardLabels[choice].BackColor = Color.Tomato;
 
             for (int i = 0; i < boardLabels.Length; i++)
             {
-                boardLabels[i].Text = updateArr + "";
+                boardLabels[i].Text = updateArr[i];
             }
         }
 
@@ -118,8 +137,8 @@ namespace WindowsFormsApp4
             //Closes the entire program by clicking on the X
             //arg: e
 
-            //this.stream.Close();
-            //this.client.Close();
+            this.stream.Close();
+            this.client.Close();
             Application.Exit();
         }
 
@@ -138,8 +157,8 @@ namespace WindowsFormsApp4
         {
             //Closes the entire program by clicking on this option in the menu
 
-            //this.stream.Close();
-            //this.client.Close();
+            this.stream.Close();
+            this.client.Close();
             Application.Exit();
         }
 
@@ -163,6 +182,12 @@ namespace WindowsFormsApp4
             //stream.Write(data, 0, data.Length);
 
             //Game();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            labelTitle.Text = "Game Started";
+            Game();
         }
     }
 }

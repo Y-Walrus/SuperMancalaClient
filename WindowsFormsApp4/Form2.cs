@@ -35,8 +35,8 @@ namespace WindowsFormsApp4
             //Closes the entire program by clicking on the X
             //arg: e
 
-            //this.client.Close();
-            //this.stream.Close();
+            this.client.Close();
+            this.stream.Close();
             Application.Exit();
         }
 
@@ -47,8 +47,8 @@ namespace WindowsFormsApp4
             //arg: sender, e
 
             string name = textBox1.Text;
-            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("login "+name);
-            //stream.Write(data, 0, data.Length);
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes("login "+name);
+            stream.Write(data, 0, data.Length);
 
             Form3 f = new Form3(this.client,this.stream);
             f.Location = this.Location;

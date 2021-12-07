@@ -25,14 +25,15 @@ namespace WindowsFormsApp4
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //Int32 port = 43000;
-            //string host = "127.0.0.0";
+            Int32 port = 21257;
+            string host = "127.0.0.1";
 
-            TcpClient client = null;//new TcpClient(host, port);
-            NetworkStream stream = null;//client.GetStream();
+            TcpClient client = new TcpClient(host, port);
+            NetworkStream stream = client.GetStream();
 
+            
             //Opens a login screen
-            Form2 f2 = new Form2(client,stream);
+            Form2 f2 = new Form2(client, stream);
             Application.Run(f2);
         }
     }

@@ -3,13 +3,13 @@ from threading import Thread
 import json
 import random
 
-CLINET_HOST = "loopback"
-CLIENT_PORT = 56595
+CLINET_HOST = "109.66.6.106"
+CLIENT_PORT = 45000
 ADDR = (CLINET_HOST, CLIENT_PORT)
 
 BACKEND_HOST = "loopback"
-BACKEND_PORT = 0  # 21257
-BACKEND_ADDR = (BACKEND_PORT, BACKEND_HOST)
+BACKEND_PORT = 21257
+BACKEND_ADDR = (BACKEND_HOST,BACKEND_PORT)
 
 BUFFER_SIZE = 1024
 
@@ -17,14 +17,18 @@ BUFFER_SIZE = 1024
 # create model, controller files (python), define for each what will be inside (game logic/communication with backend)
 
 def frontend_communication():
+    print("Hello")
     while 1:
         try:
-            command = backend_socket.recv(BUFFER_SIZE)
+            command = frontend_socket.recv(BUFFER_SIZE)
+            print(command," 123")
         except ConnectionResetError:  # 10054
             break
         if not command:
+            print(000)
             break
 
+        print(command)
         command = command.decode()
         if command in ["start", "create"]:
             client_socket.send(json.dumps({"type": "Start Game", "slow_game": True}).encode())
@@ -36,6 +40,7 @@ def frontend_communication():
             client_socket.send(json.dumps({"type": "Quit Game"}).encode())
         elif command.startswith("login"):
             client_socket.send(json.dumps({"type": "Login", "name": command.split()[1]}).encode())
+            print(234)
         elif command in ["logout"]:
             client_socket.send(json.dumps({"type": "Logout"}).encode())
         elif command in ["list", "lobbies", "showall"]:
@@ -61,8 +66,8 @@ def server_communication():
 
         if data["type"] == "Board Update":
             print_board_state(data["board"])
-            frontend_socket.send((data["board"] + " " + data["your turn"]).encode())
-            print(data["board"] + " " + data["your turn"])
+            frontend_socket.send((str(data["board"]) + " " + str(data["your turn"])).encode())
+            print(data["board"],data["your turn"])
             print()
             if data["your turn"]:
                 move()
@@ -70,7 +75,7 @@ def server_communication():
         elif data["type"] == "Success":
             try:
                 print("Game ID:", data["game_id"])
-                frontend_socket.send(("ID " + data["game_id"]).encode())
+                frontend_socket.send(("ID " + str(data["game_id"])).encode())
             except:
                 pass
 
@@ -141,3 +146,8 @@ handle_server_communication.start()
 
 handle_frontend_communication = Thread(target=frontend_communication)
 handle_frontend_communication.start()
+
+
+while 1:
+    pass
+
