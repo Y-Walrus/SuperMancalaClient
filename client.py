@@ -6,7 +6,7 @@ import time
 import pickle
 
 HOST = "loopback"  # "109.66.6.106"   # "109.65.31.250"  # "79.179.71.212"
-PORT = 59315  # 45000
+PORT = 51914  # 45000
 
 BUFSIZ = 1024
 ADDR = (HOST, PORT)
@@ -410,7 +410,7 @@ def evolve_tree_and_save():
 def load_tree():
     with open("b_t.pkl", "rb") as f:
         best_tree = pickle.load(f)
-    best_tree.print_tree()
+    #best_tree.print_tree()
     return best_tree
 
 
