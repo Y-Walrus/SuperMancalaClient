@@ -9,19 +9,23 @@ ADDR = (CLINET_HOST, CLIENT_PORT)
 
 BACKEND_HOST = "loopback"
 BACKEND_PORT = 21257
-BACKEND_ADDR = (BACKEND_HOST,BACKEND_PORT)
+BACKEND_ADDR = (BACKEND_HOST, BACKEND_PORT)
 
 BUFFER_SIZE = 1024
 
 
 # create model, controller files (python), define for each what will be inside (game logic/communication with backend)
+def send_to_frontend(data):
+    client_socket.send(str(len(data)).zfill(5).encode())
+    client_socket.send(data.encode())
+
 
 def frontend_communication():
     print("Hello")
     while 1:
         try:
             command = frontend_socket.recv(BUFFER_SIZE)
-            print(command," 123")
+            print(command, " 123")
         except ConnectionResetError:  # 10054
             break
         if not command:
@@ -31,23 +35,24 @@ def frontend_communication():
         print(command)
         command = command.decode()
         if command in ["start", "create"]:
-            client_socket.send(json.dumps({"type": "Start Game", "slow_game": True}).encode())
+            send_to_frontend(json.dumps({"type": "Start Game", "slow_game": True}))
         elif command in ["restart", "reset"]:
-            client_socket.send(json.dumps({"type": "Restart Game"}).encode())
+            send_to_frontend(json.dumps({"type": "Restart Game"}))
         elif command.startswith("join"):
-            client_socket.send(json.dumps({"type": "Join Game", "game_id": int(command.split()[1])}).encode())
+            send_to_frontend(json.dumps({"type": "Join Game", "game_id": int(command.split()[1])}))
         elif command in ["quit", "leave"]:
-            client_socket.send(json.dumps({"type": "Quit Game"}).encode())
+            send_to_frontend(json.dumps({"type": "Quit Game"}))
         elif command.startswith("login"):
-            client_socket.send(json.dumps({"type": "Login", "name": command.split()[1]}).encode())
+            send_to_frontend(json.dumps({"type": "Login", "name": command.split()[1]}))
             print(234)
         elif command in ["logout"]:
-            client_socket.send(json.dumps({"type": "Logout"}).encode())
+            send_to_frontend(json.dumps({"type": "Logout"}))
         elif command in ["list", "lobbies", "showall"]:
-            client_socket.send(json.dumps({"type": "Lobbies List"}).encode())
+            send_to_frontend(json.dumps({"type": "Lobbies List"}))
 
         else:
-            client_socket.send(command.encode())
+            print("ELSE IN FRONTEND")
+            # send_to_frontend(command)
 
 
 def server_communication():
@@ -67,7 +72,7 @@ def server_communication():
         if data["type"] == "Board Update":
             print_board_state(data["board"])
             frontend_socket.send((str(data["board"]) + " " + str(data["your turn"])).encode())
-            print(data["board"],data["your turn"])
+            print(data["board"], data["your turn"])
             print()
             if data["your turn"]:
                 move()
@@ -147,7 +152,5 @@ handle_server_communication.start()
 handle_frontend_communication = Thread(target=frontend_communication)
 handle_frontend_communication.start()
 
-
 while 1:
     pass
-
