@@ -356,13 +356,11 @@ def bot_move(board_state):
 
 
 def move(board_state):
-    # population = random_population(512, 8)
-    # fitness_list = evaluate_fitness(population, board)
     # t_s = time.time()
     # gen = evolve(initial_board_state, 10, 64, 8)
     # print(time.time() - t_s)
     # best_tree = gen[0][0]
-    choice = parse_program(best_tree, initial_board_state)
+    choice = parse_program(load_tree(), initial_board_state)
     if choice not in valid_moves(board_state):
         choice = abs(choice) % 7
         while choice not in valid_moves(board_state):
