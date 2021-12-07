@@ -14,11 +14,17 @@ namespace WindowsFormsApp4
 {
     public partial class Form3 : Form
     {
-        private NetworkStream stream;
-        private TcpClient client;
+        //class Form3 inherits from Form
+        //Form3 is responsible of the choose between join or start screen
+
+        private NetworkStream stream; //The client defined in the main program
+        private TcpClient client; //The stream defined in the main program
 
         public Form3(TcpClient client,NetworkStream stream)
         {
+            //The contractor of the choosing screen
+            //arg: client, stream
+
             InitializeComponent();
             this.client = client;
             this.stream = stream;
@@ -26,6 +32,9 @@ namespace WindowsFormsApp4
 
         private void startGameBtn_Click(object sender, EventArgs e)
         {
+            //Asks to start a game from the server and moves to the game screen when the 
+            //"Start Game" button is pressed 
+
             //string gameID = textBox1.Text;
             //Byte[] data = System.Text.Encoding.ASCII.GetBytes("start");
 
@@ -38,6 +47,9 @@ namespace WindowsFormsApp4
 
         private void joinGameBtn_Click(object sender, EventArgs e)
         {
+            //Displays text box for entering the game ID and the "Join!" button for it
+
+            //Hides the choosing buttons
             startGameBtn.Enabled = false;
             joinGameBtn.Enabled = false;
             startGameBtn.Hide();
@@ -51,6 +63,9 @@ namespace WindowsFormsApp4
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            //Closes the entire program by clicking on the X
+            //arg: e
+
             //this.stream.Close();
             //this.client.Close();
             Application.Exit();
@@ -58,6 +73,8 @@ namespace WindowsFormsApp4
 
         private void joinBtn_Click(object sender, EventArgs e)
         {
+            //Joinig a game when the "Join!" button is pressed
+
             //string gameID = textBox1.Text;
             //Byte[] data = System.Text.Encoding.ASCII.GetBytes("join "+gameID);
 
@@ -70,6 +87,8 @@ namespace WindowsFormsApp4
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Closes the entire program by clicking on this option in the menu
+
             //this.stream.Close();
             //this.client.Close();
             Application.Exit();
@@ -77,6 +96,9 @@ namespace WindowsFormsApp4
 
         private void backToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Returns to the previous screen by clicking on this option in the menu
+            //arg: sender, e
+
             //Byte[] data = System.Text.Encoding.ASCII.GetBytes("logout");
             //stream.Write(data, 0, data.Length);
 

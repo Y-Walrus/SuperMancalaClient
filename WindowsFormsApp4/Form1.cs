@@ -14,76 +14,97 @@ namespace WindowsFormsApp4
 {
     public partial class Form1 : Form
     {
-        
-        private TcpClient client;
-        private NetworkStream stream;
-        private Label[] boardLabels;
+        //class Form1 inherits from Form
+        //Form1 is responsible of the game screen
+
+        private TcpClient client; //The client defined in the main program
+        private NetworkStream stream; //The stream defined in the main program
+        private Label[] boardLabels; //Array of the labels that make up the game board
 
         public Form1(TcpClient client,NetworkStream stream)
         {
+            //The contractor of the game screen
+            //arg: client, stream
+
             InitializeComponent();
 
-            Label[] boardLabels = { this.label1,this.label2,this.label3,this.label4,
-                this.label5,this.label6,this.label7,this.label8,this.label9,this.label10,
-                this.label11,this.label12,this.label13,this.label14};
+            Label[] boardLabels = { this.hole1,this.hole2,this.hole3,this.hole4,
+                this.hole5,this.hole6,this.hole7,this.hole8,this.hole9,this.hole10,
+                this.hole11,this.hole12,this.hole13,this.labelTitle};
 
             this.boardLabels = boardLabels;
             this.client = client;
             this.stream = stream;
+
             //Game();
         }
 
         private void Game()
         {
-            // String to store the response ASCII representation.
-            Byte[] data = new Byte[256];
+            //Performs backend communication to update the board
 
-            // Read the first batch of the TcpServer response bytes.
+            Byte[] data = new Byte[256]; //the response ASCII representation
+
+            // Read the first batch of the TcpServer response bytes
             Int32 bytes = stream.Read(data, 0, data.Length);
             string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
+            //A loop that lasts until the end of the game and updates the board
             while (responseData != "LOSS" && responseData != "WIN")
             {
                 responseData.Replace("[", "");
                 responseData.Replace("]", "");
                 string[] update = responseData.Split(' ');
                 string[] updateBoardLabels = new string[update.Length - 1];
+
                 for (int i = 0; i < updateBoardLabels.Length; i++)
                 {
                     updateBoardLabels[i] = update[i][0] + "";
                 }
+
                 UpdateBoard(updateBoardLabels, update[update.Length - 1]);
 
-                data = new Byte[256];
+                data = new Byte[256]; //the response ASCII representation
 
-                // Read the first batch of the TcpServer response bytes.
+                // Read the first batch of the TcpServer response bytes
                 bytes = stream.Read(data, 0, data.Length);
                 responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             }
+
+            //If the user wins changes the screen title to "YOU WON!", else "YOU LOST:("
             if (responseData == "WIN")
-                label14.Text = "YOU WON!";
+                labelTitle.Text = "YOU WON!";
             else
-                label14.Text = "YOU LOST :(";
+                labelTitle.Text = "YOU LOST :(";
         }
 
         private void UpdateBoard(string [] updateArr,string isMyTurn, int choice=0)
         {
+            //Updating the board
+            //arg: updateArr, isMyTurn, choice
+            //updateArr contains the new values of the holes in the board
+            //isMyTurn true if it's the user's turn, else false
+            //choice stores the hole number from which the turn was made
+
+            //Marks who is playing
             if (isMyTurn=="true")
             {
-                this.checkBox1.Checked = true;
-                this.checkBox2.Checked = false;
+                this.checkBoxMe.Checked = true;
+                this.checkBoxOpponent.Checked = false;
             }
             else
             {
-                this.checkBox1.Checked = false;
-                this.checkBox2.Checked = true;
+                this.checkBoxMe.Checked = false;
+                this.checkBoxOpponent.Checked = true;
             }
 
-            for(int i=0;i<boardLabels.Length;i++)
+            //Returns all holes to their original color
+            for (int i=0;i<boardLabels.Length;i++)
             {
                 this.boardLabels[i].BackColor = Color.Tan;
             }
 
+            //Marks the hole number from which the turn was made
             boardLabels[choice].BackColor = Color.Tomato;
 
             for (int i = 0; i < boardLabels.Length; i++)
@@ -94,6 +115,9 @@ namespace WindowsFormsApp4
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            //Closes the entire program by clicking on the X
+            //arg: e
+
             //this.stream.Close();
             //this.client.Close();
             Application.Exit();
@@ -101,6 +125,9 @@ namespace WindowsFormsApp4
 
         private void returnToJoinstartToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Returns to the previous screen by clicking on this option in the menu
+            //arg: sender, e
+
             Form3 f = new Form3(client,stream);
             f.Location = this.Location;
             f.Show();
@@ -109,6 +136,8 @@ namespace WindowsFormsApp4
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //Closes the entire program by clicking on this option in the menu
+
             //this.stream.Close();
             //this.client.Close();
             Application.Exit();
@@ -116,16 +145,19 @@ namespace WindowsFormsApp4
 
         private void restartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            for(int i=0;i<this.boardLabels.Length;i++)
+            //Requests a new game and updates the screen accordingly.
+
+            //Returns the board to its original position
+            for (int i=0;i<this.boardLabels.Length;i++)
             {
                 if (i == 0 || i == 7)
                     this.boardLabels[i].Text = "0";
                 else this.boardLabels[i].Text = "4";
             }
 
-            this.checkBox1.Checked = false;
-            this.checkBox2.Checked = false;
-            this.label14.Text = "GAME STARTED";
+            this.checkBoxMe.Checked = false;
+            this.checkBoxOpponent.Checked = false;
+            this.labelTitle.Text = "GAME STARTED";
 
             //Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
             //stream.Write(data, 0, data.Length);
