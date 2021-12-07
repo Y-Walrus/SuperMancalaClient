@@ -42,18 +42,30 @@ namespace WindowsFormsApp4
             //Performs backend communication to update the board
 
             Byte[] data = new Byte[5]; //the response ASCII representation
-
             // Read the first batch of the TcpServer response bytes
             Int32 bytes = stream.Read(data, 0, data.Length);
             string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            Console.WriteLine(responseData);
 
-            data = new Byte[47]; //the response ASCII representation
-
+            data = new Byte[int.Parse(responseData)];
             // Read the first batch of the TcpServer response bytes
             bytes = stream.Read(data, 0, data.Length);
             responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            
+
+
+            Console.WriteLine(responseData);
+
+            data = new Byte[5]; //the response ASCII representation
+            // Read the first batch of the TcpServer response bytes
+            bytes = stream.Read(data, 0, data.Length);
+            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+
+            data = new Byte[int.Parse(responseData)];
+            // Read the first batch of the TcpServer response bytes
+            bytes = stream.Read(data, 0, data.Length);
+            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+
+
+
 
             //A loop that lasts until the end of the game and updates the board
             while (responseData != "LOSS" && responseData != "WIN")
@@ -83,8 +95,12 @@ namespace WindowsFormsApp4
 
                 UpdateBoard(updateBoardLabels, update[update.Length - 1]);
 
-                data = new Byte[47]; //the response ASCII representation
+                data = new Byte[5]; //the response ASCII representation
+                // Read the first batch of the TcpServer response bytes
+                bytes = stream.Read(data, 0, data.Length);
+                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
+                data = new Byte[int.Parse(responseData)];
                 // Read the first batch of the TcpServer response bytes
                 bytes = stream.Read(data, 0, data.Length);
                 responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
