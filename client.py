@@ -18,9 +18,9 @@ VALUE_AT_MAX = 13  # maybe range without the mancalas?
 
 
 # create model, controller files (python), define for each what will be inside (game logic/communication with backend)
-# create C# view file
-# think about what happens with the view while the bot is playing, does it slow down/freeze?
-# start writing the algorithm, save the random one and see if it starts beating and how much
+# make prints for logic debugging:
+#   every new generation with fitness
+#   before and after mutation, crossover
 
 class Node:  # use _ before variables!
     def __init__(self, data):
@@ -211,15 +211,15 @@ def fitness(board_state, population):
     for program in population:
         score = 0
 
-        #board = board_state.copy()
-        #score += simulation(program, board, True)
+        # board = board_state.copy()
+        # score += simulation(program, board, True)
 
-        #board = board_state.copy()
-        #score += simulation(program, board, False)
+        # board = board_state.copy()
+        # score += simulation(program, board, False)
 
-        #score = 100 * score - program.depth()
-        results = benchmark(program, 10)
-        score = results[0] * 10 + results[1] * 5 - program.node_amount()
+        # score = 100 * score - program.depth()
+        results = benchmark(program, 101)
+        score = results  # * 100 - program.node_amount()
         fitness_list.append((program, score))
 
     return fitness_list
@@ -391,29 +391,29 @@ def print_board_state(board):
 
 
 def benchmark(program, runs):
-    wins = 0
-    draws = 0
-    losses = 0
+    score = 0
     for i in range(runs):
-        r = simulation(program, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], True)
-        if r > 24:
-            wins += 1
-        elif r == 24:
-            draws += 1
-        else:
-            losses += 1
-    #print(wins, draws, losses)
-    #wins, draws, losses = (0, 0, 0)
+        score += simulation(program, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], True)
     for i in range(runs):
-        r = simulation(program, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], False)
-        if r > 24:
-            wins += 1
-        elif r == 24:
-            draws += 1
-        else:
-            losses += 1
-    #print(wins, draws, losses)
-    return wins, draws, losses
+        score += simulation(program, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], False)
+    return score
+
+
+def evolve_tree_and_save():
+    t_s = time.time()
+    gen = evolve(initial_board_state, 10, 128, 8)
+    print(time.time() - t_s)
+    best_tree = gen[0][0]
+    best_tree.print_tree()
+    with open("b_t.pkl", "wb") as f:
+        pickle.dump(best_tree, f, pickle.HIGHEST_PROTOCOL)
+
+
+def load_tree():
+    with open("b_t.pkl", "rb") as f:
+        best_tree = pickle.load(f)
+    best_tree.print_tree()
+    return best_tree
 
 
 initial_board_state = [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4]
@@ -431,7 +431,7 @@ print("Depth (no first node):", t.depth())
 
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-'''
+
 while 1:
     try:
         print("Waiting for connection...")
@@ -450,22 +450,9 @@ rec.start()
 
 u_send = Thread(target=user_send)
 u_send.start()
-'''
 
-t_s = time.time()
-gen = evolve(initial_board_state, 1000, 128, 8)
-print(time.time() - t_s)
-best_tree = gen[0][0]
-best_tree.print_tree()
-with open("b_t.pkl", "wb") as f:
-    pickle.dump(best_tree, f, pickle.HIGHEST_PROTOCOL)
 
-'''
-with open("b_t.pkl", "rb") as f:
-    best_tree = pickle.load(f)
-best_tree.print_tree()
-'''
-
+"""
 wins = 0
 draws = 0
 losses = 0
@@ -488,3 +475,4 @@ for i in range(1000):
     else:
         losses += 1
 print(wins, draws, losses)
+"""
