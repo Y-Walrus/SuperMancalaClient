@@ -3,8 +3,8 @@ from threading import Thread
 import json
 import random
 
-CLINET_HOST = "109.66.6.106"
-CLIENT_PORT = 45000
+CLINET_HOST = "192.168.1.15"
+CLIENT_PORT = 65507
 ADDR = (CLINET_HOST, CLIENT_PORT)
 
 BACKEND_HOST = "loopback"

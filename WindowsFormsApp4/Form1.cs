@@ -37,35 +37,65 @@ namespace WindowsFormsApp4
             this.stream = stream;
         }
 
+        private string receiveInfo()
+        {
+            Byte[] data = new Byte[5]; //the response ASCII representation
+            Int32 bytes = stream.Read(data, 0, data.Length);
+            string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            
+            while(responseData.Length<5)
+            {
+                data = new Byte[5-responseData.Length]; 
+                bytes = stream.Read(data, 0, data.Length);
+                responseData =responseData+
+                    System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            }
+
+
+            data = new Byte[int.Parse(responseData)];
+            bytes = stream.Read(data, 0, data.Length);
+            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+
+            while(responseData.Length<data.Length)
+            {
+                data = new Byte[data.Length - responseData.Length];
+                bytes = stream.Read(data, 0, data.Length);
+                responseData = responseData +
+                    System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            }
+
+            return responseData;
+        }
+
         private void Game()
         {
             //Performs backend communication to update the board
 
-            Byte[] data = new Byte[5]; //the response ASCII representation
-            // Read the first batch of the TcpServer response bytes
-            Int32 bytes = stream.Read(data, 0, data.Length);
-            string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            //Byte[] data = new Byte[5]; //the response ASCII representation
+            //// Read the first batch of the TcpServer response bytes
+            //Int32 bytes = stream.Read(data, 0, data.Length);
+            //string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            //Console.WriteLine(responseData.Length);
+            //data = new Byte[int.Parse(responseData)];
+            //// Read the first batch of the TcpServer response bytes
+            //bytes = stream.Read(data, 0, data.Length);
+            //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-            data = new Byte[int.Parse(responseData)];
-            // Read the first batch of the TcpServer response bytes
-            bytes = stream.Read(data, 0, data.Length);
-            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-
+            string responseData = receiveInfo();
             Console.WriteLine(responseData);
 
-            data = new Byte[5]; //the response ASCII representation
-            // Read the first batch of the TcpServer response bytes
-            bytes = stream.Read(data, 0, data.Length);
-            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            //data = new Byte[5]; //the response ASCII representation
+            //// Read the first batch of the TcpServer response bytes
+            //bytes = stream.Read(data, 0, data.Length);
+            //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-            data = new Byte[int.Parse(responseData)];
-            // Read the first batch of the TcpServer response bytes
-            bytes = stream.Read(data, 0, data.Length);
-            responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+            //data = new Byte[int.Parse(responseData)];
+            //// Read the first batch of the TcpServer response bytes
+            //bytes = stream.Read(data, 0, data.Length);
+            //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-
-
+            responseData = receiveInfo();
+            
 
             //A loop that lasts until the end of the game and updates the board
             while (responseData != "LOSS" && responseData != "WIN")
@@ -75,16 +105,17 @@ namespace WindowsFormsApp4
                 responseData = responseData.Remove(index, 1);
                 index = responseData.IndexOf(']');
                 responseData = responseData.Remove(index, 1);
+
                 Console.WriteLine(responseData);
 
                 string[] update = responseData.Split(' ');
-                Console.WriteLine(update.Length);
-                Console.Write("Update ");
-                for(int i=0;i<update.Length;i++)
-                {
-                    Console.Write(update[i] + "-");
-                }
-                Console.WriteLine();
+                //Console.WriteLine(update.Length);
+                //Console.Write("Update ");
+                //for(int i=0;i<update.Length;i++)
+                //{
+                //    Console.Write(update[i] + "-");
+                //}
+                //Console.WriteLine();
 
                 string[] updateBoardLabels = new string[14];
 
@@ -95,15 +126,16 @@ namespace WindowsFormsApp4
 
                 UpdateBoard(updateBoardLabels, update[update.Length - 1]);
 
-                data = new Byte[5]; //the response ASCII representation
-                // Read the first batch of the TcpServer response bytes
-                bytes = stream.Read(data, 0, data.Length);
-                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+                responseData = receiveInfo();
+                //data = new Byte[5]; //the response ASCII representation
+                //// Read the first batch of the TcpServer response bytes
+                //bytes = stream.Read(data, 0, data.Length);
+                //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
-                data = new Byte[int.Parse(responseData)];
-                // Read the first batch of the TcpServer response bytes
-                bytes = stream.Read(data, 0, data.Length);
-                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
+                //data = new Byte[int.Parse(responseData)];
+                //// Read the first batch of the TcpServer response bytes
+                //bytes = stream.Read(data, 0, data.Length);
+                //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             }
 
             //If the user wins changes the screen title to "YOU WON!", else "YOU LOST:("
