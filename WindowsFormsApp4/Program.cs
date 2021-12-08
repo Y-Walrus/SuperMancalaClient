@@ -30,7 +30,7 @@ namespace WindowsFormsApp4
 
             TcpClient client = new TcpClient(host, port);
             NetworkStream stream = client.GetStream();
-            
+
             
             //Opens a login screen
             Form2 f2 = new Form2(client, stream);
