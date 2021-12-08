@@ -17,6 +17,7 @@ RANDOM_NUMBER_MIN = 0
 RANDOM_NUMBER_MAX = 13  # not sure
 VALUE_AT_MIN = 0
 VALUE_AT_MAX = 13  # maybe range without the mancalas?
+
 BUFFER_SIZE = 1024
 
 
@@ -278,20 +279,17 @@ def mutation(program):
     program.replace_random_node()
 
 
-def receive():
-
 def frontend_communication():
-    print("Hello")
+    print("FRONTEND COMMUNICATION STARTED")
     while 1:
         try:
             # print(client_socket.recv(10*BUFSIZ, socket.MSG_PEEK))
             msg_length = int(client_socket.recv(5))  # is BUFSIZ critical here?
             command = frontend_socket.recv(BUFFER_SIZE)
-            print(command, " 123")
+            print("command received is:", command)
         except ConnectionResetError:  # 10054
             break
         if not command:
-            print(000)
             break
 
         print(command)
@@ -306,7 +304,7 @@ def frontend_communication():
             send_to_frontend(json.dumps({"type": "Quit Game"}))
         elif command.startswith("login"):
             send_to_frontend(json.dumps({"type": "Login", "name": command.split()[1]}))
-            print(234)
+            print("logged in!!!")
         elif command in ["logout"]:
             send_to_frontend(json.dumps({"type": "Logout"}))
         elif command in ["list", "lobbies", "showall"]:
@@ -368,32 +366,6 @@ def server_communication():
             print(data)
 
 
-def user_send():
-    while 1:
-        command = input("> ").lower()
-        if command in ["start", "create"]:
-            client_socket.send(json.dumps({"type": "Start Game", "slow_game": True}).encode())
-        elif command in ["restart", "reset"]:
-            client_socket.send(json.dumps({"type": "Restart Game"}).encode())
-        elif command.startswith("join"):
-            client_socket.send(json.dumps({"type": "Join Game", "game_id": int(command.split()[1])}).encode())
-        elif command in ["quit", "leave"]:
-            client_socket.send(json.dumps({"type": "Quit Game"}).encode())
-        elif command.startswith("login"):
-            client_socket.send(json.dumps({"type": "Login", "name": command.split()[1]}).encode())
-        elif command in ["logout"]:
-            client_socket.send(json.dumps({"type": "Logout"}).encode())
-        elif command in ["list", "lobbies", "showall"]:
-            client_socket.send(json.dumps({"type": "Lobbies List"}).encode())
-
-        else:
-            client_socket.send(command.encode())
-
-
-def send(data):
-    client_socket.send(data.encode())
-
-
 def login():
     send(json.dumps({"type": "Login", "name": input("name --> ")}))
 
@@ -412,15 +384,12 @@ def move(board_state):
         choice = abs(choice) % 7
         while choice not in valid_moves(board_state):
             choice = (choice + 1) % 7  # question!!
-    send(
-def move():
+
     client_socket.send(
         json.dumps({
             "type": "Game Move",
             "index": random.randint(1, 6)
         }).encode()
-            "index": bot_move(board_state)
-        })
     )
     # print(time.time() - t_s)
 
