@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
+using System.Threading;
+
 
 
 namespace WindowsFormsApp4
@@ -16,7 +18,7 @@ namespace WindowsFormsApp4
     {
         //class Form1 inherits from Form
         //Form1 is responsible of the game screen
-
+        
         private TcpClient client; //The client defined in the main program
         private NetworkStream stream; //The stream defined in the main program
         private Label[] boardLabels; //Array of the labels that make up the game board
@@ -71,30 +73,9 @@ namespace WindowsFormsApp4
         {
             //Performs backend communication to update the board
 
-            //Byte[] data = new Byte[5]; //the response ASCII representation
-            //// Read the first batch of the TcpServer response bytes
-            //Int32 bytes = stream.Read(data, 0, data.Length);
-            //string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-            //Console.WriteLine(responseData.Length);
-            //data = new Byte[int.Parse(responseData)];
-            //// Read the first batch of the TcpServer response bytes
-            //bytes = stream.Read(data, 0, data.Length);
-            //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-            string responseData = receiveInfo();
-
-            //data = new Byte[5]; //the response ASCII representation
-            //// Read the first batch of the TcpServer response bytes
-            //bytes = stream.Read(data, 0, data.Length);
-            //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-            //data = new Byte[int.Parse(responseData)];
-            //// Read the first batch of the TcpServer response bytes
-            //bytes = stream.Read(data, 0, data.Length);
-            //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-            responseData = receiveInfo();
+            string responseData = receiveInfo();//Game ID
             
+            responseData = receiveInfo();
 
             //A loop that lasts until the end of the game and updates the board
             while (responseData != "LOSS" && responseData != "WIN")
@@ -105,36 +86,21 @@ namespace WindowsFormsApp4
                 index = responseData.IndexOf(']');
                 responseData = responseData.Remove(index, 1);
 
+                responseData = responseData.Replace(",", "");
                 Console.WriteLine(responseData);
 
                 string[] update = responseData.Split(' ');
-                //Console.WriteLine(update.Length);
-                //Console.Write("Update ");
-                //for(int i=0;i<update.Length;i++)
-                //{
-                //    Console.Write(update[i] + "-");
-                //}
-                //Console.WriteLine();
 
                 string[] updateBoardLabels = new string[14];
 
                 for (int i = 0; i < updateBoardLabels.Length; i++)
                 {
-                    updateBoardLabels[i] = update[i][0] + "";
+                    updateBoardLabels[i] = update[i] + "";
                 }
 
                 UpdateBoard(updateBoardLabels, update[update.Length - 1]);
 
                 responseData = receiveInfo();
-                //data = new Byte[5]; //the response ASCII representation
-                //// Read the first batch of the TcpServer response bytes
-                //bytes = stream.Read(data, 0, data.Length);
-                //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-                //data = new Byte[int.Parse(responseData)];
-                //// Read the first batch of the TcpServer response bytes
-                //bytes = stream.Read(data, 0, data.Length);
-                //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             }
 
             //If the user wins changes the screen title to "YOU WON!", else "YOU LOST:("
@@ -164,20 +130,27 @@ namespace WindowsFormsApp4
                 this.checkBoxOpponent.Checked = true;
             }
 
-            ////Returns all holes to their original color
-            //for (int i=0;i<boardLabels.Length;i++)
-            //{
-            //    this.boardLabels[i].BackColor = Color.Tan;
-            //}
-
-            ////Marks the hole number from which the turn was made
-            //boardLabels[choice].BackColor = Color.Tomato;
-
+            //Returns all holes to their original color
             for (int i = 0; i < boardLabels.Length; i++)
             {
-                boardLabels[i].Text = updateArr[i];
-                boardLabels[i].Update();
+                this.boardLabels[i].BackColor = Color.Tan;
+                this.boardLabels[i].Update();
+
             }
+
+            
+            for (int i = 0; i < boardLabels.Length; i++)
+            {
+                if(boardLabels[i].Text!=updateArr[i])
+                {
+                    this.boardLabels[i].BackColor = Color.Tomato;
+                    this.boardLabels[i].Update();
+                }
+                this.boardLabels[i].Text = updateArr[i];
+                
+                this.boardLabels[i].Update();
+            }
+            Thread.Sleep(300);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -227,10 +200,10 @@ namespace WindowsFormsApp4
             this.checkBoxOpponent.Checked = false;
             this.labelTitle.Text = "GAME STARTED";
 
-            //Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
-            //stream.Write(data, 0, data.Length);
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
+            stream.Write(data, 0, data.Length);
 
-            //Game();
+            Game();
         }
 
         private void button1_Click(object sender, EventArgs e)

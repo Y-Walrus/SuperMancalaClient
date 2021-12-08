@@ -6,7 +6,7 @@ import time
 import pickle
 
 CLINET_HOST = "192.168.1.15"
-CLIENT_PORT = 58132
+CLIENT_PORT = 58880
 ADDR = (CLINET_HOST, CLIENT_PORT)
 
 BACKEND_HOST = "loopback"
@@ -399,11 +399,28 @@ def move(board_state):
     client_socket.send(
         json.dumps({
             "type": "Game Move",
-            "index": random.randint(1, 6)
+            "index": choice
         }).encode()
     )
     # print(time.time() - t_s)
+'''
 
+
+def move(board_state):
+    # Make random move
+    for index in board_state:
+        if index!=0:
+            break
+    print(f"--Making move {index}--")
+
+    # Send Game Move message to server
+    client_socket.send(
+        json.dumps({
+            "type": "Game Move",
+            "index": index
+        }).encode()
+    )
+'''
 
 def print_board_state(board):
     print("   ||| ", end="")
