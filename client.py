@@ -6,7 +6,7 @@ import time
 import pickle
 
 CLINET_HOST = "192.168.1.15"
-CLIENT_PORT = 65507
+CLIENT_PORT = 59512
 ADDR = (CLINET_HOST, CLIENT_PORT)
 
 BACKEND_HOST = "loopback"
