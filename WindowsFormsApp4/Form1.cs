@@ -51,7 +51,7 @@ namespace WindowsFormsApp4
                     System.Text.Encoding.ASCII.GetString(data, 0, bytes);
             }
 
-
+            Console.WriteLine(responseData);
             data = new Byte[int.Parse(responseData)];
             bytes = stream.Read(data, 0, data.Length);
             responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
