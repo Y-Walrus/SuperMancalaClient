@@ -82,7 +82,6 @@ namespace WindowsFormsApp4
             //responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
 
             string responseData = receiveInfo();
-            Console.WriteLine(responseData);
 
             //data = new Byte[5]; //the response ASCII representation
             //// Read the first batch of the TcpServer response bytes
@@ -177,6 +176,7 @@ namespace WindowsFormsApp4
             for (int i = 0; i < boardLabels.Length; i++)
             {
                 boardLabels[i].Text = updateArr[i];
+                boardLabels[i].Update();
             }
         }
 
@@ -220,6 +220,7 @@ namespace WindowsFormsApp4
                 if (i == 0 || i == 7)
                     this.boardLabels[i].Text = "0";
                 else this.boardLabels[i].Text = "4";
+                boardLabels[i].Update();
             }
 
             this.checkBoxMe.Checked = false;
@@ -235,6 +236,7 @@ namespace WindowsFormsApp4
         private void button1_Click(object sender, EventArgs e)
         {
             labelTitle.Text = "Game Started";
+            labelTitle.Update();
             Game();
         }
     }
