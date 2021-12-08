@@ -26,6 +26,7 @@ def send_to_frontend(data):
     client_socket.send(str(len(data)).zfill(5).encode())
     client_socket.send(data.encode())
 
+
 class Node:  # use _ before variables!
     def __init__(self, data):
         self.nodes = []
@@ -332,7 +333,7 @@ def server_communication():
         t0 = time.time()
         if data["type"] == "Board Update":
             print_board_state(data["board"])
-            frontend_socket.send((str(data["board"]) + " " + str(data["your turn"])).encode())
+            send_to_frontend((str(data["board"]) + " " + str(data["your turn"])).encode())
             print(data["board"], data["your turn"])
             print()
             if data["your turn"]:
@@ -342,7 +343,7 @@ def server_communication():
         elif data["type"] == "Success":
             try:
                 print("Game ID:", data["game_id"])
-                frontend_socket.send(("ID " + str(data["game_id"])).encode())
+                send_to_frontend(("ID " + str(data["game_id"])).encode())
             except:
                 pass
 
@@ -359,15 +360,11 @@ def server_communication():
             wewon = data["won"]
             print(data["log"])
             if wewon:
-                frontend_socket.send("WIN".encode())
+                send_to_frontend("WIN")
             else:
-                frontend_socket.send("LOSS".encode())
+                send_to_frontend("LOSS")
         else:
             print(data)
-
-
-def login():
-    send(json.dumps({"type": "Login", "name": input("name --> ")}))
 
 
 def bot_move(board_state):
@@ -430,7 +427,7 @@ def evolve_tree_and_save():
 def load_tree():
     with open("b_t.pkl", "rb") as f:
         best_tree = pickle.load(f)
-    #best_tree.print_tree()
+    # best_tree.print_tree()
     return best_tree
 
 
@@ -475,7 +472,6 @@ handle_server_communication.start()
 
 handle_frontend_communication = Thread(target=frontend_communication)
 handle_frontend_communication.start()
-
 
 """
 wins = 0
