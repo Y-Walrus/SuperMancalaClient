@@ -1,9 +1,15 @@
+"""
+Backend side of bot for mancala game (bot logic, communication with game server, communication with frontend)
+Nov-Dec 2021
+Yegor Stolyarsky, Ben Solomovitch
+"""
+
 import socket
 from threading import Thread
-import json
+import json  # format of messages defined by game server
 import random
-import time
-import pickle
+import time  # for testing of bot performance
+import pickle  # for saving a tree object in .pkl format
 
 CLINET_HOST = "192.168.1.15"
 CLIENT_PORT = 58880
@@ -13,42 +19,72 @@ BACKEND_HOST = "loopback"
 BACKEND_PORT = 21257
 BACKEND_ADDR = (BACKEND_HOST, BACKEND_PORT)
 
+# random number bounds for value of number in tree
 RANDOM_NUMBER_MIN = 0
 RANDOM_NUMBER_MAX = 13  # not sure
-VALUE_AT_MIN = 0
-VALUE_AT_MAX = 13  # maybe range without the mancalas?
 
 BUFFER_SIZE = 1024
 
 
 # create model, controller files (python), define for each what will be inside (game logic/communication with backend)
+
 def send_to_frontend(data):
+    """
+    Sends data to frontend socket, with its length preceding it
+    :param data: str with the data to send
+    :return: None
+    """
     frontend_socket.send(str(len(data)).zfill(5).encode())
     frontend_socket.send(data.encode())
 
 
 class Node:  # use _ before variables!
+    """
+    Used to represent a program.
+    """
+
     def __init__(self, data):
         self.nodes = []
         self.data = data
 
     def insert(self, data):
+        """
+        Adds a child to the node.
+        :param data: The value the new node will get.
+        :return: None
+        """
         self.nodes.append(Node(data))
 
     def print_tree(self):
+        """
+        Prints a program.
+        :return: None
+        """
         print(self.data + " [" + str(len(self.nodes)) + "]")
         for node in self.nodes:
             node.print_tree()
 
     def node_amount(self):
+        """
+        Counts the amount of nodes in the tree.
+        :return: int of the amount
+        """
         return 1 + sum([node.node_amount() for node in self.nodes])
 
     def depth(self):  # not including itself as a layer
+        """
+        The length of the longest child.
+        :return: int
+        """
         if not self.nodes:
             return 0
         return 1 + max([node.depth() for node in self.nodes])
 
     def random_node(self):  # might result in too small trees??? maybe do it with weights to weight more smaller ones
+        """
+        Chooses a "random" sub-tree in a tree.
+        :return: The sub-tree (Node type)
+        """
         r = random.randint(0, self.depth())
         tree = self
         while r > 0:
@@ -64,6 +100,11 @@ class Node:  # use _ before variables!
         return tree
 
     def replace_random_node(self, replacing_tree=""):  # default is replacing with random tree
+        """
+        Chooses a "random" sub-tree and replaces it with another tree.
+        :param replacing_tree: a Node that will replace a random tree, default is random.
+        :return: None
+        """
         node_to_replace = self.random_node()
         if replacing_tree == "":
             replacing_tree = random_tree(node_to_replace.depth())
@@ -76,7 +117,6 @@ def random_function(function_set):
     function = random.choice(function_set)
 
     if function == "value_at":
-        # function += "(" + str(random.randint(VALUE_AT_MIN, VALUE_AT_MAX + 1)) + ")"
         pass
     elif function == "random_number":
         function = str(random.randint(RANDOM_NUMBER_MIN, RANDOM_NUMBER_MAX + 1))  # what is the range?
@@ -93,6 +133,12 @@ def random_tree(depth):  # random type and then a random number, not vice versa 
 
 
 def random_tree_fill(tree, depth):
+    """
+    Fills a tree with functions up to a given depth.
+    :param tree: the tree to fill
+    :param depth: the depth of the final tree
+    :return: Node that holds the tree
+    """
     d = depth
     if d > 0 and not tree.data.isnumeric():
         if depth == 1:
@@ -121,6 +167,12 @@ def random_population(size, depth):
 
 
 def parse_program(program, board):
+    """
+    Translates a program into the hole it represents
+    :param program: The program to parse (Node)
+    :param board: The current board state (list of int)
+    :return: int with the choice of the program
+    """
     if program.data.isnumeric():
         return int(program.data)
     elif program.data == "+":
@@ -145,13 +197,21 @@ def valid_moves(board):
 
 
 def simulation_move(board, choice):
+    """
+    Does one move in a simulation.
+    :param board: Current board state
+    :param choice: The hole chosen for the move
+    :return: New board state (list of int), whether the same side should move again (bool)
+    """
     same_move = False
     i = choice
     amount = board[choice]
     board[choice] = 0
 
     while amount != 0:
-        i = (i - 1) % 14
+        i = (i - 1) % 14  # move to next hole
+
+        # skip your mancala
         if 1 <= choice <= 6:
             if i == 7:
                 i = 6
@@ -164,10 +224,10 @@ def simulation_move(board, choice):
         amount -= 1
         board[i] += 1
 
-    if i == 0 or i == 7:
+    if i == 0 or i == 7:  # if finished in your mancala you get another move
         same_move = True
 
-    elif board[i] == 1:
+    elif board[i] == 1:  # if there is only one stone in the last hole - it was empty and the player finished there
         if 1 <= choice <= 6:
             board[0] += board[14 - i]
         elif 8 <= choice <= 13:
@@ -176,6 +236,7 @@ def simulation_move(board, choice):
             print("Problem in simulation_move()")
         board[14 - i] = 0
 
+    # if no stones on one side
     if sum(board[1:7]) == 0:
         board[0] += sum(board[8:14])
         for i in range(8, 14):
@@ -189,10 +250,15 @@ def simulation_move(board, choice):
 
 
 def simulation(program_tree, board, program_moves):
-    # print_board_state(board)
-    # print()
+    """
+    Runs a simulation game of a program_tree against a random bot
+    :param program_tree: Node, a program that is being tested
+    :param board: list of int, starting position
+    :param program_moves: bool, whether the program_tree moves first
+    :return: The number of stones that the program_tree has at the end of the game
+    """
 
-    if valid_moves(board) and valid_moves(board[7:] + board[:7]):
+    if valid_moves(board) and valid_moves(board[7:] + board[:7]):  # if game hasn't finished yet
         if program_moves:
             choice = parse_program(program_tree, board)
             if choice not in valid_moves(board):
@@ -202,16 +268,22 @@ def simulation(program_tree, board, program_moves):
         else:
             choice = 7 + bot_move(board[7:] + board[:7])
         next_move = simulation_move(board, choice)
-        if next_move[1]:
+        if next_move[1]:  # if same side moves again
             next_side = program_moves
         else:
             next_side = not program_moves
-        return simulation(program_tree, next_move[0], next_side)
+        return simulation(program_tree, next_move[0], next_side)  # recursive advancement of the simulation
     else:
         return board[0]
 
 
 def fitness(board_state, population):
+    """
+    Calculates for each program in a population how fit it is.
+    :param board_state: list of int, current state of the board
+    :param population: list of Node, the population to evaluate
+    :return: list of (program, score) tuples
+    """
     fitness_list = []
     for program in population:
         score = 0
@@ -231,6 +303,14 @@ def fitness(board_state, population):
 
 
 def evolve(board_state, generations, population_size, program_depth):
+    """
+    Evolve for several generations.
+    :param board_state: list of int, current board state
+    :param generations: int, number of generations to be run
+    :param population_size: int, amount of programs in each generation
+    :param program_depth: int, depth of each program in a generation
+    :return: sorted list of (program, fitness) tuples (from best fitness to worst)
+    """
     population = random_population(population_size, program_depth)
     population_fitness = fitness(board_state, population)
     next_population = []
@@ -241,10 +321,7 @@ def evolve(board_state, generations, population_size, program_depth):
         population_fitness = fitness(board_state, next_population)
         population = next_population
         next_population = []
-
-        # print(next_population)
     print("finished evolving")
-    # return smth sorted?
 
     return sorted(population_fitness, key=lambda x: x[1], reverse=True)
 
@@ -281,6 +358,10 @@ def mutation(program):
 
 
 def frontend_communication():
+    """
+    Handles communication with frontend, meant to be run in a thread.
+    :return: None
+    """
     print("FRONTEND COMMUNICATION STARTED")
     while 1:
         try:
@@ -321,6 +402,10 @@ def frontend_communication():
 
 
 def server_communication():
+    """
+    Handles communication with the game server, meant to be run in a thread.
+    :return: None
+    """
     while 1:
         try:
             msg_length = int(client_socket.recv(5))
@@ -373,19 +458,32 @@ def server_communication():
 
 
 def bot_move(board_state):
+    """
+    Bot that is used in simulation().
+    :param board_state: list of int, current board state in which the bot plays
+    :return: int, hole that the bot chooses
+    """
     return random.choice(valid_moves(board_state))
 
 
 def move(board_state):
+    """
+    Chooses a move and sends it to the game server.
+    :param board_state: list of int, current board state
+    :return: None
+    """
+    # for dynamic runs:
     # t_s = time.time()
     # gen = evolve(initial_board_state, 10, 64, 8)
     # print(time.time() - t_s)
     # best_tree = gen[0][0]
+
+    # static tree load:
     choice = parse_program(load_tree(), initial_board_state)
     if choice not in valid_moves(board_state):
         choice = abs(choice) % 7
         while choice not in valid_moves(board_state):
-            choice = (choice + 1) % 7  # question!!
+            choice = (choice + 1) % 7  # question!! Maybe if choice not valid set fitness to 0?
 
     client_socket.send(
         json.dumps({
@@ -393,27 +491,6 @@ def move(board_state):
             "index": choice
         }).encode()
     )
-    # print(time.time() - t_s)
-
-
-'''
-
-
-def move(board_state):
-    # Make random move
-    for index in board_state:
-        if index!=0:
-            break
-    print(f"--Making move {index}--")
-
-    # Send Game Move message to server
-    client_socket.send(
-        json.dumps({
-            "type": "Game Move",
-            "index": index
-        }).encode()
-    )
-'''
 
 
 def print_board_state(board):
