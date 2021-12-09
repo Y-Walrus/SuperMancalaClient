@@ -85,8 +85,8 @@ def random_function(function_set):
 
 
 def random_tree(depth):  # random type and then a random number, not vice versa (?) / make option for blank node?
-    function_set = ["+", "-", "value_at", "random_number"]  # this should be done in another place
-    tree = Node(random_function(function_set))  # because creating a new tree recursively is problematic
+    function_set = ["+", "-", "value_at", "random_number"]
+    tree = Node(random_function(function_set))
     depth -= 1
 
     return random_tree_fill(tree, depth)
@@ -284,8 +284,6 @@ def frontend_communication():
     print("FRONTEND COMMUNICATION STARTED")
     while 1:
         try:
-            # print(client_socket.recv(10*BUFSIZ, socket.MSG_PEEK))
-            #msg_length = int(client_socket.recv(5))  # is BUFSIZ critical here?
             command = frontend_socket.recv(BUFFER_SIZE)
             print("command received is:", command)
         except ConnectionResetError:  # 10054
@@ -296,32 +294,25 @@ def frontend_communication():
         print(command)
         command = command.decode()
         if command in ["start", "create"]:
-            #send_to_frontend(json.dumps({"type": "Start Game", "slow_game": True}))
             client_socket.send(json.dumps({"type": "Start Game", "slow_game": True}).encode())
-            
+
         elif command in ["restart", "reset"]:
-            #send_to_frontend(json.dumps({"type": "Restart Game"}))
             client_socket.send(json.dumps({"type": "Restart Game"}).encode())
-            
+
         elif command.startswith("join"):
-            #send_to_frontend(json.dumps({"type": "Join Game", "game_id": int(command.split()[1])}))
             client_socket.send(json.dumps({"type": "Join Game", "game_id": int(command.split()[1])}).encode())
-            
+
         elif command in ["quit", "leave"]:
-            #send_to_frontend(json.dumps({"type": "Quit Game"}))
             client_socket.send(json.dumps({"type": "Quit Game"}).encode())
-            
+
         elif command.startswith("login"):
-            #send_to_frontend(json.dumps({"type": "Login", "name": command.split()[1]}))
             client_socket.send(json.dumps({"type": "Login", "name": command.split()[1]}).encode())
             print("logged in!!!")
-            
+
         elif command in ["logout"]:
-            #send_to_frontend(json.dumps({"type": "Logout"}))
             client_socket.send(json.dumps({"type": "Logout"}).encode())
-            
+
         elif command in ["list", "lobbies", "showall"]:
-            #send_to_frontend(json.dumps({"type": "Lobbies List"}))
             client_socket.send(json.dumps({"type": "Lobbies List"}).encode())
 
         else:
@@ -403,6 +394,8 @@ def move(board_state):
         }).encode()
     )
     # print(time.time() - t_s)
+
+
 '''
 
 
@@ -421,6 +414,7 @@ def move(board_state):
         }).encode()
     )
 '''
+
 
 def print_board_state(board):
     print("   ||| ", end="")
@@ -464,18 +458,6 @@ def load_tree():
 
 initial_board_state = [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4]
 
-'''
-t = random_tree(16)
-t.print_tree()
-print("Node amount:", t.node_amount())
-print("Depth (no first node):", t.depth())
-'''
-
-# print("Choice of tree:", parse_program(t, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 1]))
-# population = random_population(128, 8)
-# print(simulation(t, initial_board_state, True))
-
-
 backend_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 backend_socket.bind(BACKEND_ADDR)
 backend_socket.listen(2)
@@ -504,11 +486,13 @@ handle_server_communication.start()
 handle_frontend_communication = Thread(target=frontend_communication)
 handle_frontend_communication.start()
 
-"""
+'''
+# runs a simulation, counts and prints (wins/draws/losses) against random
+best_tree = load_tree()
 wins = 0
 draws = 0
 losses = 0
-for i in range(1000):
+for i in range(100000):
     r = simulation(best_tree, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], True)
     if r > 24:
         wins += 1
@@ -518,7 +502,7 @@ for i in range(1000):
         losses += 1
 print(wins, draws, losses)
 wins, draws, losses = (0, 0, 0)
-for i in range(1000):
+for i in range(100000):
     r = simulation(best_tree, [0, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4], False)
     if r > 24:
         wins += 1
@@ -527,7 +511,8 @@ for i in range(1000):
     else:
         losses += 1
 print(wins, draws, losses)
-"""
+'''
 
+# keeps parent thread running
 while 1:
     pass
