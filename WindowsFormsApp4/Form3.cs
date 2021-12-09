@@ -107,5 +107,13 @@ namespace WindowsFormsApp4
             f.Show();
             this.Hide();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Form1 f = new Form1(client, stream);
+            f.Location = this.Location;
+            f.Show();
+            this.Hide();
+        }
     }
 }

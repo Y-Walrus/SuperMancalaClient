@@ -22,8 +22,9 @@ namespace WindowsFormsApp4
         private TcpClient client; //The client defined in the main program
         private NetworkStream stream; //The stream defined in the main program
         private Label[] boardLabels; //Array of the labels that make up the game board
+        private string mode;
 
-        public Form1(TcpClient client,NetworkStream stream)
+        public Form1(TcpClient client, NetworkStream stream, string mode = "")
         {
             //The contractor of the game screen
             //arg: client, stream
@@ -37,6 +38,7 @@ namespace WindowsFormsApp4
             this.boardLabels = boardLabels;
             this.client = client;
             this.stream = stream;
+            this.mode = mode;
         }
 
         private string receiveInfo()
@@ -77,37 +79,56 @@ namespace WindowsFormsApp4
             
             responseData = receiveInfo();
 
-            //A loop that lasts until the end of the game and updates the board
-            while (responseData != "LOSS" && responseData != "WIN")
+            int countGame=0;
+
+
+            while (mode == "competition" && countGame < 7) 
             {
-                Console.WriteLine(responseData);
-                int index= responseData.IndexOf('[');
-                responseData = responseData.Remove(index, 1);
-                index = responseData.IndexOf(']');
-                responseData = responseData.Remove(index, 1);
+                labelTitle.Text = "Game Started";
+                labelTitle.Update();
 
-                responseData = responseData.Replace(",", "");
-                Console.WriteLine(responseData);
-
-                string[] update = responseData.Split(' ');
-
-                string[] updateBoardLabels = new string[14];
-
-                for (int i = 0; i < updateBoardLabels.Length; i++)
+                //A loop that lasts until the end of the game and updates the board
+                while (responseData != "LOSS" && responseData != "WIN")
                 {
-                    updateBoardLabels[i] = update[i] + "";
+                    Console.WriteLine(responseData);
+                    int index = responseData.IndexOf('[');
+                    responseData = responseData.Remove(index, 1);
+                    index = responseData.IndexOf(']');
+                    responseData = responseData.Remove(index, 1);
+
+                    responseData = responseData.Replace(",", "");
+                    Console.WriteLine(responseData);
+
+                    string[] update = responseData.Split(' ');
+
+                    string[] updateBoardLabels = new string[14];
+
+                    for (int i = 0; i < updateBoardLabels.Length; i++)
+                    {
+                        updateBoardLabels[i] = update[i] + "";
+                    }
+
+                    UpdateBoard(updateBoardLabels, update[update.Length - 1]);
+
+                    responseData = receiveInfo();
                 }
 
-                UpdateBoard(updateBoardLabels, update[update.Length - 1]);
-
-                responseData = receiveInfo();
+                //If the user wins changes the screen title to "YOU WON!", else "YOU LOST:("
+                if (responseData == "WIN")
+                    labelTitle.Text = "YOU WON!";
+                else
+                    labelTitle.Text = "YOU LOST :(";
             }
 
-            //If the user wins changes the screen title to "YOU WON!", else "YOU LOST:("
-            if (responseData == "WIN")
-                labelTitle.Text = "YOU WON!";
-            else
-                labelTitle.Text = "YOU LOST :(";
+            //Returns all holes to their original color
+            for (int i = 0; i < boardLabels.Length; i++)
+            {
+                this.boardLabels[i].BackColor = Color.Tan;
+                this.boardLabels[i].Update();
+
+            }
+
+            countGame++;
         }
 
         private void UpdateBoard(string [] updateArr,string isMyTurn, int choice=0)
@@ -198,7 +219,6 @@ namespace WindowsFormsApp4
 
             this.checkBoxMe.Checked = false;
             this.checkBoxOpponent.Checked = false;
-            this.labelTitle.Text = "GAME STARTED";
 
             Byte[] data = System.Text.Encoding.ASCII.GetBytes("restart");
             stream.Write(data, 0, data.Length);
@@ -208,8 +228,8 @@ namespace WindowsFormsApp4
 
         private void button1_Click(object sender, EventArgs e)
         {
-            labelTitle.Text = "Game Started";
-            labelTitle.Update();
+            //starts to update the board when "ready?" button is pressed
+
             Game();
         }
     }
